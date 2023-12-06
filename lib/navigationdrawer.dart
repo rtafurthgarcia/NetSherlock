@@ -9,9 +9,12 @@ class DrawerDestination {
 }
 
 const List<DrawerDestination> destinations = <DrawerDestination>[
-  DrawerDestination('Profile', Icon(Icons.account_circle_outlined), Icon(Icons.account_circle)),
-  DrawerDestination('Alerts', Icon(Icons.warning_amber_outlined), Icon(Icons.warning_amber)),
-  DrawerDestination('Scans', Icon(Icons.domain_verification_outlined), Icon(Icons.domain_verification)),
+  DrawerDestination('Profile', Icon(Icons.account_circle_outlined),
+      Icon(Icons.account_circle)),
+  DrawerDestination(
+      'Alerts', Icon(Icons.warning_amber_outlined), Icon(Icons.warning_amber)),
+  DrawerDestination('Scans', Icon(Icons.domain_verification_outlined),
+      Icon(Icons.domain_verification)),
   DrawerDestination('DNS', Icon(Icons.dns_outlined), Icon(Icons.dns)),
 ];
 
@@ -119,12 +122,16 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
         onDestinationSelected: handleScreenChanged,
         selectedIndex: screenIndex,
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(28, 16, 16, 10),
-            child: Text(
-              'NetSherlock',
-              style: Theme.of(context).textTheme.titleSmall,
+          const UserAccountsDrawerHeader(
+            accountName: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Test'),
+                Text('450 credits left'),
+              ],
             ),
+            accountEmail: Text('test@.com'),
+            
           ),
           ...destinations.map(
             (DrawerDestination destination) {

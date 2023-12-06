@@ -41,87 +41,24 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
     scaffoldKey.currentState!.openEndDrawer();
   }
 
-  Widget buildBottomBarScaffold() {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Text('Page Index = $screenIndex'),
-          ],
-        ),
-      ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: screenIndex,
-        onDestinationSelected: (int index) {
-          setState(() {
-            screenIndex = index;
-          });
-        },
-        destinations: destinations.map(
-          (DrawerDestination destination) {
-            return NavigationDestination(
-              label: destination.label,
-              icon: destination.icon,
-              selectedIcon: destination.selectedIcon,
-              tooltip: destination.label,
-            );
-          },
-        ).toList(),
-      ),
-    );
-  }
-
-  Widget buildDrawerScaffold(BuildContext context) {
+ Widget buildModalDrawerScaffold(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      body: SafeArea(
-        bottom: false,
-        top: false,
-        child: Row(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: NavigationRail(
-                minWidth: 50,
-                destinations: destinations.map(
-                  (DrawerDestination destination) {
-                    return NavigationRailDestination(
-                      label: Text(destination.label),
-                      icon: destination.icon,
-                      selectedIcon: destination.selectedIcon,
-                    );
-                  },
-                ).toList(),
-                selectedIndex: screenIndex,
-                useIndicator: true,
-                onDestinationSelected: (int index) {
-                  setState(() {
-                    screenIndex = index;
-                  });
-                },
-              ),
-            ),
-            const VerticalDivider(thickness: 1, width: 1),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Text('Page Index = $screenIndex'),
-                  ElevatedButton(
-                    onPressed: openDrawer,
-                    child: const Text('Open Drawer'),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-      endDrawer: NavigationDrawer(
+      appBar: AppBar(title: const Text("NetSherlock")),
+      /*body: Center(
+        child: _widgetOptions[_selectedIndex],
+      ),*/
+      drawer: NavigationDrawer(
         onDestinationSelected: handleScreenChanged,
         selectedIndex: screenIndex,
         children: <Widget>[
+          /*Padding(
+            padding: const EdgeInsets.fromLTRB(28, 16, 16, 10),
+            child: Text(
+              'NetSherlock',
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+          ),*/
           const UserAccountsDrawerHeader(
             accountName: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,6 +87,52 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
       ),
     );
   }
+ 
+  Widget buildStandardDrawerScaffold(BuildContext context) {
+    return Scaffold(
+      key: scaffoldKey,
+      body: SafeArea(
+        bottom: false,
+        top: false,
+        child: Row(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: NavigationRail(
+                minWidth: 50,
+                labelType: NavigationRailLabelType.all,
+                destinations: destinations.map(
+                  (DrawerDestination destination) {
+                    return NavigationRailDestination(
+                      label: Text(destination.label),
+                      icon: destination.icon,
+                      selectedIcon: destination.selectedIcon,
+                    );
+                  },
+                ).toList(),
+                selectedIndex: screenIndex,
+                useIndicator: true,
+                onDestinationSelected: (int index) {
+                  setState(() {
+                    screenIndex = index;
+                  });
+                },
+              ),
+            ),
+            const VerticalDivider(thickness: 1, width: 1),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Text('Page Index = $screenIndex'),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   void didChangeDependencies() {
@@ -160,7 +143,7 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
   @override
   Widget build(BuildContext context) {
     return showNavigationDrawer
-        ? buildDrawerScaffold(context)
-        : buildBottomBarScaffold();
+        ? buildStandardDrawerScaffold(context)
+        : buildModalDrawerScaffold(context);
   }
 }

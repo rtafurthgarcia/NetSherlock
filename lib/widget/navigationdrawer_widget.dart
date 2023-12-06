@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:netsherlock/page/account_page.dart';
 
 class DrawerDestination {
   const DrawerDestination(this.label, this.icon, this.selectedIcon);
@@ -11,11 +12,12 @@ class DrawerDestination {
 const List<DrawerDestination> destinations = <DrawerDestination>[
   DrawerDestination('Profile', Icon(Icons.account_circle_outlined),
       Icon(Icons.account_circle)),
-  DrawerDestination(
-      'Alerts', Icon(Icons.warning_amber_outlined), Icon(Icons.warning_amber)),
+  DrawerDestination('Alerts', Icon(Icons.warning_amber_outlined),
+      Icon(Icons.warning_amber)),
   DrawerDestination('Scans', Icon(Icons.domain_verification_outlined),
       Icon(Icons.domain_verification)),
-  DrawerDestination('DNS', Icon(Icons.dns_outlined), Icon(Icons.dns)),
+  DrawerDestination(
+      'DNS', Icon(Icons.dns_outlined), Icon(Icons.dns)),
 ];
 
 class AppNavigationDrawer extends StatefulWidget {
@@ -31,34 +33,34 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
   int screenIndex = 0;
   late bool showNavigationDrawer;
 
-  void handleScreenChanged(int selectedScreen) {
+  void updateScreenIndex(int selectedScreen) {
     setState(() {
       screenIndex = selectedScreen;
     });
+  }
+
+  Widget displayProperScreen() {
+    switch (screenIndex) {
+      case 0:
+        return AccountPage();
+        break;
+      default:
+        return AccountPage();
+    }
   }
 
   void openDrawer() {
     scaffoldKey.currentState!.openEndDrawer();
   }
 
- Widget buildModalDrawerScaffold(BuildContext context) {
+  Widget buildModalDrawerScaffold(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(title: const Text("NetSherlock")),
-      /*body: Center(
-        child: _widgetOptions[_selectedIndex],
-      ),*/
       drawer: NavigationDrawer(
-        onDestinationSelected: handleScreenChanged,
+        onDestinationSelected: updateScreenIndex,
         selectedIndex: screenIndex,
         children: <Widget>[
-          /*Padding(
-            padding: const EdgeInsets.fromLTRB(28, 16, 16, 10),
-            child: Text(
-              'NetSherlock',
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-          ),*/
           const UserAccountsDrawerHeader(
             accountName: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,7 +70,6 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
               ],
             ),
             accountEmail: Text('test@.com'),
-            
           ),
           ...destinations.map(
             (DrawerDestination destination) {
@@ -85,9 +86,12 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
           ),
         ],
       ),
+      body: Expanded(
+        child: displayProperScreen(),
+      ),
     );
   }
- 
+
   Widget buildStandardDrawerScaffold(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
@@ -99,34 +103,24 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5),
               child: NavigationRail(
-                minWidth: 50,
-                labelType: NavigationRailLabelType.all,
-                destinations: destinations.map(
-                  (DrawerDestination destination) {
-                    return NavigationRailDestination(
-                      label: Text(destination.label),
-                      icon: destination.icon,
-                      selectedIcon: destination.selectedIcon,
-                    );
-                  },
-                ).toList(),
-                selectedIndex: screenIndex,
-                useIndicator: true,
-                onDestinationSelected: (int index) {
-                  setState(() {
-                    screenIndex = index;
-                  });
-                },
-              ),
+                  minWidth: 50,
+                  labelType: NavigationRailLabelType.all,
+                  destinations: destinations.map(
+                    (DrawerDestination destination) {
+                      return NavigationRailDestination(
+                        label: Text(destination.label),
+                        icon: destination.icon,
+                        selectedIcon: destination.selectedIcon,
+                      );
+                    },
+                  ).toList(),
+                  selectedIndex: screenIndex,
+                  useIndicator: true,
+                  onDestinationSelected: updateScreenIndex),
             ),
             const VerticalDivider(thickness: 1, width: 1),
             Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Text('Page Index = $screenIndex'),
-                ],
-              ),
+              child: displayProperScreen(),
             ),
           ],
         ),

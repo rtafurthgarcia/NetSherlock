@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:netsherlock/widget/navigationdrawer_widget.dart';
+import 'package:netsherlock/services/shodan_account_service.dart';
+import 'package:netsherlock/widgets/navigationdrawer_widget.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MainApp());
@@ -10,10 +12,13 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   return MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true),
-      home: const AppNavigationDrawer(),
+      home: ChangeNotifierProvider(
+        create: (context) => ShodanAccountService(),
+        child: const AppNavigationDrawer(),
+      ),
     );
   }
 }

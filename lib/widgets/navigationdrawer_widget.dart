@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:netsherlock/models/shodan_account_model.dart';
 import 'package:netsherlock/pages/account_page.dart';
+import 'package:netsherlock/services/shodan_account_service.dart';
 import 'package:provider/provider.dart';
 
 class DrawerDestination {
@@ -67,16 +68,21 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
         onDestinationSelected: updateScreenIndex,
         selectedIndex: screenIndex,
         children: <Widget>[
-          const UserAccountsDrawerHeader(
-            accountName: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Test'),
-                Text('450 credits left'),
-              ],
-            ),
-            accountEmail: Text('test@.com'),
-          ),
+          Consumer<ShodanAccountService>(
+          builder: (context, shodanAccountService, child) {
+            String userAccount = "Not connected.";
+            String creditsMessage = "";
+
+            if (shodanAccountService.isAuthenticated) {
+              userAccount = shodanAccountService.shodanAccount!.accountName.isNotEmpty ? shodanAccountService.shodanAccount!.accountName : "Anonymous";
+              creditsMessage = "${shodanAccountService.shodanAccount!.creditsLeft} credit(s) left";
+            }
+
+            return UserAccountsDrawerHeader(
+              accountName: Text(creditsMessage),
+              accountEmail: Text(userAccount),
+            );
+          }),
           ...destinations.map(
             (DrawerDestination destination) {
               return NavigationDrawerDestination(

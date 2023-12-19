@@ -54,16 +54,16 @@ class _AccountPageState extends State<AccountPage> {
         return const CircularProgressIndicator();
       } else if (shodanAccountService.isAuthenticated) {
         String accountName =
-            "Hi, ${shodanAccountService.shodanAccount?.accountName ?? "anonymous fella"}";
+            "Hi, ${shodanAccountService.shodanAccount!.accountName.isNotEmpty ? shodanAccountService.shodanAccount!.accountName: "anonymous fella"}";
         String creditsLeft =
-            "You have ${shodanAccountService.shodanAccount?.creditsLeft.toString()} credit(s) left.";
+            "You have ${shodanAccountService.shodanAccount!.creditsLeft.toString()} credit(s) left.";
         return Column(
           children: [
             Row(
               children: [
                 Text(
                   accountName,
-                  style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -108,11 +108,11 @@ class _AccountPageState extends State<AccountPage> {
                         borderSide: BorderSide.none),
                     fillColor: Colors.purple.withOpacity(0.1),
                     filled: true,
-                    prefixIcon: const Icon(Icons.password),
+                    prefixIcon: const Icon(Icons.key),
                     errorText: shodanAccountService.error != null ? shodanAccountService.error.toString() : null),
                 obscureText: true,
                 controller: _apiKeyController,
-                onChanged: (value) => shodanAccountService.setApiKey(value),
+                onEditingComplete: () => shodanAccountService.setApiKey(_apiKeyController.text),
               );
             }
           },

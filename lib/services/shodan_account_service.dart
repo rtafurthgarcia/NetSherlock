@@ -49,6 +49,8 @@ class ShodanAccountService extends ChangeNotifier {
     reloadDetails();
   }
 
+  void notify() => notifyListeners();
+
   void reloadDetails() async {
     SharedPreferences.getInstance()
         .then((prefs) async {

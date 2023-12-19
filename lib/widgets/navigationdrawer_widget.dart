@@ -60,7 +60,7 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
     scaffoldKey.currentState!.openEndDrawer();
   }
 
-  Widget buildModalDrawerScaffold(BuildContext context) {
+  Widget buildSideNavigationDrawer(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(title: const Text("NetSherlock")),
@@ -98,8 +98,12 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
           ),
         ],
       ),
-      body: Expanded(
-        child: displayProperScreen(),
+      body: Column(
+        children: [
+          Expanded(
+            child: displayProperScreen(),
+          ),
+        ],
       ),
     );
   }
@@ -143,13 +147,13 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    showNavigationDrawer = MediaQuery.of(context).size.width >= 450;
+    showNavigationDrawer = MediaQuery.of(context).size.width >= 600;
   }
 
   @override
   Widget build(BuildContext context) {
     return showNavigationDrawer
         ? buildStandardDrawerScaffold(context)
-        : buildModalDrawerScaffold(context);
+        : buildSideNavigationDrawer(context);
   }
 }

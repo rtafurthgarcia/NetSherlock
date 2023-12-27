@@ -73,9 +73,9 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
             String userAccount = "Not connected.";
             String creditsMessage = "";
 
-            if (shodanAccountService.isAuthenticated) {
-              userAccount = shodanAccountService.shodanAccount!.accountName.isNotEmpty ? shodanAccountService.shodanAccount!.accountName : "Anonymous";
-              creditsMessage = "${shodanAccountService.shodanAccount!.creditsLeft} credit(s) left";
+            if (shodanAccountService.state == ShodanAccountState.authenticated) {
+              userAccount = shodanAccountService.shodanAccount!.plan.isNotEmpty ? shodanAccountService.shodanAccount!.plan : "Anonymous";
+              creditsMessage = "${shodanAccountService.shodanAccount!.scanCreditsLeft} credit(s) left";
             }
 
             return UserAccountsDrawerHeader(

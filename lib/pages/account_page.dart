@@ -19,8 +19,7 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   void _submit() {
-    final shodanAccountService =  Provider.of<ShodanAccountService>(context, listen: false);
-    shodanAccountService.setApiKey(_apiKeyController.text);
+    final shodanAccountService = Provider.of<ShodanAccountService>(context, listen: false);
 
     if (shodanAccountService.error == null) {
       shodanAccountService.reloadDetails();
@@ -50,20 +49,22 @@ class _AccountPageState extends State<AccountPage> {
   buildHeader(context) {
     return Consumer<ShodanAccountService>(
         builder: (context, shodanAccountService, child) {
-      if (shodanAccountService.isLoading) {
+      if (shodanAccountService.state == ShodanAccountState.loading) {
         return const CircularProgressIndicator();
-      } else if (shodanAccountService.isAuthenticated) {
+      } else if (shodanAccountService.state ==
+          ShodanAccountState.authenticated) {
         String accountName =
-            "Hi, ${shodanAccountService.shodanAccount!.accountName.isNotEmpty ? shodanAccountService.shodanAccount!.accountName: "anonymous fella"}";
+            "Hi, ${shodanAccountService.shodanAccount!.plan.isNotEmpty ? shodanAccountService.shodanAccount!.plan : "anonymous fella"}";
         String creditsLeft =
-            "You have ${shodanAccountService.shodanAccount!.creditsLeft.toString()} credit(s) left.";
+            "You have ${shodanAccountService.shodanAccount!.scanCreditsLeft.toString()} credit(s) left.";
         return Column(
           children: [
             Row(
               children: [
                 Text(
                   accountName,
-                  style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 40, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -95,7 +96,7 @@ class _AccountPageState extends State<AccountPage> {
         const SizedBox(height: 10),
         Consumer<ShodanAccountService>(
           builder: (context, shodanAccountService, child) {
-            if (shodanAccountService.isLoading) {
+            if (shodanAccountService.state == ShodanAccountState.loading) {
               return const CircularProgressIndicator();
             } else {
               _apiKeyController.text = shodanAccountService.apiKey;
@@ -109,27 +110,32 @@ class _AccountPageState extends State<AccountPage> {
                     fillColor: Colors.purple.withOpacity(0.1),
                     filled: true,
                     prefixIcon: const Icon(Icons.key),
-                    errorText: shodanAccountService.error != null ? shodanAccountService.error.toString() : null),
+                    errorText: shodanAccountService.error != null
+                        ? shodanAccountService.error.toString()
+                        : null),
                 obscureText: true,
                 controller: _apiKeyController,
-                onEditingComplete: () => shodanAccountService.setApiKey(_apiKeyController.text),
+                onChanged: (String newText) => shodanAccountService.setApiKey(_apiKeyController.text),
               );
             }
           },
         ),
         const SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: ShodanAccountService.isApiKeyValid(_apiKeyController.text) == null ? _submit : null,
-          style: ElevatedButton.styleFrom(
-            shape: const StadiumBorder(),
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            backgroundColor: Colors.purple,
-          ),
-          child: const Text(
-            "Test API connection",
-            style: TextStyle(fontSize: 20),
-          ),
-        )
+        Consumer<ShodanAccountService>(
+            builder: (context, shodanAccountService, child) {
+          return ElevatedButton(
+            onPressed: shodanAccountService.error == null ? _submit : null,
+            style: ElevatedButton.styleFrom(
+              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+              backgroundColor: Colors.purple,
+            ),
+            child: const Text(
+              "Log-in",
+              style: TextStyle(fontSize: 20),
+            ),
+          );
+        })
       ],
     );
   }
@@ -144,8 +150,7 @@ class _AccountPageState extends State<AccountPage> {
             child: const Text(
               "Get one here, or create yourself an account",
               style: TextStyle(color: Colors.purple),
-            )
-          )
+            ))
       ],
     );
   }

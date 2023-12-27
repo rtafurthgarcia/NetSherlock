@@ -9,13 +9,13 @@ import 'package:netsherlock/services/shodan_account_service.dart';
 
 class ShodanAccountProvider {
   static Future<ShodanAccount> fetchAccountDetails({required String apiKey}) async {
-    String? errorMessage = ShodanAccountService.isApiKeyValid(apiKey);
+    String? errorMessage = ShodanAccountService.validateApiKey(apiKey);
     if (errorMessage != null) {
       throw ArgumentError(errorMessage);
     }
 
     final response = await http.get(
-      Uri.parse("${Consts.API_URI}/account/profile?key=$apiKey"),
+      Uri.parse("${Consts.API_URI}/api-info?key=$apiKey"),
       /*headers: {
         HttpHeaders.authorizationHeader: apiKey,
       },*/

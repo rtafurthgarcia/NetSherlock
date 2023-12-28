@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:netsherlock/consts.dart';
 import 'package:netsherlock/services/shodan_account_service.dart';
+import 'package:netsherlock/widgets/circular_usage_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:fl_chart/fl_chart.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({Key? key}) : super(key: key);
@@ -13,6 +14,7 @@ class AccountPage extends StatefulWidget {
 
 class _AccountPageState extends State<AccountPage> {
   final TextEditingController _apiKeyController = TextEditingController();
+  bool _isScreenWide = false;
 
   @override
   void dispose() {
@@ -37,6 +39,8 @@ class _AccountPageState extends State<AccountPage> {
 
   @override
   Widget build(BuildContext context) {
+    _isScreenWide = MediaQuery.sizeOf(context).width >= Consts.MAX_SCREEN_WIDTH;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -62,29 +66,21 @@ class _AccountPageState extends State<AccountPage> {
       } else if (shodanAccountService.state == ShodanAccountState.authenticated) {
         String accountName =
             "Hi, ${shodanAccountService.shodanAccount!.plan.isNotEmpty ? shodanAccountService.shodanAccount!.plan : "anonymous fella"}";
-        String scanCreditsLeft =
-            "You have ${shodanAccountService.shodanAccount!.scanCreditsLeft.toString()} scan credit(s) left.";
-        String queryCreditsLeft =
-            "You have ${shodanAccountService.shodanAccount!.queryCreditsLeft.toString()} query credit(s) left.";
         return Column(
           children: [
-            Row(
-              children: [
-                Text(
-                  accountName,
-                  style: const TextStyle(
-                      fontSize: 40, fontWeight: FontWeight.bold),
-                ),
-              ],
+            Text(
+                accountName,
+                style: const TextStyle(
+                    fontSize: 40, fontWeight: FontWeight.bold),
             ),
-            Row(
-              children: [
-                Text(scanCreditsLeft),
-              ],
-            ),
-            Row(
-              children: [
-                Text(queryCreditsLeft),
+            Flex(
+              direction: _isScreenWide ? Axis.horizontal : Axis.vertical,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                CircularUsageWidget(currentUsage: shodanAccountService.shodanAccount!.scanCreditsLeft, maxUsage: 100, name: "scan credit(s)"),
+                CircularUsageWidget(currentUsage: shodanAccountService.shodanAccount!.queryCreditsLeft, maxUsage: 100, name: "query credit(s)"),
+                CircularUsageWidget(currentUsage: shodanAccountService.shodanAccount!.amountOfMonitoredIps, maxUsage: 100, name: "monitored IP(s)"),
               ],
             ),
           ],
@@ -160,12 +156,13 @@ class _AccountPageState extends State<AccountPage> {
       children: [
         const Text("You don't have an API key yet?"),
         TextButton(
-            onPressed: _launchUrl,
-            child: const Text(
-              "Get one here, or create yourself an account",
-              overflow: TextOverflow.visible,
-              style: TextStyle(color: Colors.purple),
-            ))
+          onPressed: _launchUrl,
+          child: const Text(
+            "Get one here, or create yourself an account",
+            overflow: TextOverflow.visible,
+            style: TextStyle(color: Colors.purple),
+          )
+        )
       ],
     );
   }

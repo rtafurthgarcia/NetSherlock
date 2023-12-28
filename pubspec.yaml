@@ -18,7 +18,7 @@ dependencies:
   shared_preferences: ^2.2.2
   window_manager: ^0.3.7
   url_launcher: 
-  fl_chart: ^0.65.0
+  step_progress_indicator: ^1.0.2
 
 dev_dependencies:
   flutter_test:

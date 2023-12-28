@@ -3,6 +3,7 @@ import 'package:netsherlock/models/shodan_account_model.dart';
 import 'package:netsherlock/pages/account_page.dart';
 import 'package:netsherlock/services/shodan_account_service.dart';
 import 'package:provider/provider.dart';
+import 'package:netsherlock/consts.dart';
 
 class DrawerDestination {
   const DrawerDestination(this.label, this.icon, this.selectedIcon);
@@ -147,7 +148,7 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    showNavigationDrawer = MediaQuery.of(context).size.width >= 600;
+    showNavigationDrawer = MediaQuery.of(context).size.width >= Consts.MAX_SCREEN_WIDTH;
   }
 
   @override

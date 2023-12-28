@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:netsherlock/services/shodan_account_service.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({Key? key}) : super(key: key);
@@ -26,6 +28,13 @@ class _AccountPageState extends State<AccountPage> {
     }
   }
 
+  Future<void> _launchUrl() async {
+    final shodanUrl =  Uri.parse("https://account.shodan.io/register");
+    if (!await launchUrl(shodanUrl)) {
+      throw Exception('Could not launch $shodanUrl');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -47,16 +56,16 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   buildHeader(context) {
-    return Consumer<ShodanAccountService>(
-        builder: (context, shodanAccountService, child) {
+    return Consumer<ShodanAccountService>(builder: (context, shodanAccountService, child) {
       if (shodanAccountService.state == ShodanAccountState.loading) {
         return const CircularProgressIndicator();
-      } else if (shodanAccountService.state ==
-          ShodanAccountState.authenticated) {
+      } else if (shodanAccountService.state == ShodanAccountState.authenticated) {
         String accountName =
             "Hi, ${shodanAccountService.shodanAccount!.plan.isNotEmpty ? shodanAccountService.shodanAccount!.plan : "anonymous fella"}";
-        String creditsLeft =
-            "You have ${shodanAccountService.shodanAccount!.scanCreditsLeft.toString()} credit(s) left.";
+        String scanCreditsLeft =
+            "You have ${shodanAccountService.shodanAccount!.scanCreditsLeft.toString()} scan credit(s) left.";
+        String queryCreditsLeft =
+            "You have ${shodanAccountService.shodanAccount!.queryCreditsLeft.toString()} query credit(s) left.";
         return Column(
           children: [
             Row(
@@ -70,7 +79,12 @@ class _AccountPageState extends State<AccountPage> {
             ),
             Row(
               children: [
-                Text(creditsLeft),
+                Text(scanCreditsLeft),
+              ],
+            ),
+            Row(
+              children: [
+                Text(queryCreditsLeft),
               ],
             ),
           ],
@@ -80,6 +94,7 @@ class _AccountPageState extends State<AccountPage> {
           children: [
             Text(
               "Can't show you anything if you don't log-in first, chief.",
+              overflow: TextOverflow.visible,
               style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
             ),
           ],
@@ -94,8 +109,7 @@ class _AccountPageState extends State<AccountPage> {
       mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 10),
-        Consumer<ShodanAccountService>(
-          builder: (context, shodanAccountService, child) {
+        Consumer<ShodanAccountService>(builder: (context, shodanAccountService, child) {
             if (shodanAccountService.state == ShodanAccountState.loading) {
               return const CircularProgressIndicator();
             } else {
@@ -141,14 +155,15 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   buildSignup(context) {
-    return Row(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text("Dont have an API key?"),
+        const Text("You don't have an API key yet?"),
         TextButton(
-            onPressed: () {},
+            onPressed: _launchUrl,
             child: const Text(
               "Get one here, or create yourself an account",
+              overflow: TextOverflow.visible,
               style: TextStyle(color: Colors.purple),
             ))
       ],

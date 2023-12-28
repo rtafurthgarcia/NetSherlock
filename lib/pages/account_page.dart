@@ -22,16 +22,8 @@ class _AccountPageState extends State<AccountPage> {
     super.dispose();
   }
 
-  void _submit() {
-    final shodanAccountService = Provider.of<ShodanAccountService>(context, listen: false);
-
-    if (shodanAccountService.error == null) {
-      shodanAccountService.reloadDetails();
-    }
-  }
-
   Future<void> _launchUrl() async {
-    final shodanUrl =  Uri.parse("https://account.shodan.io/register");
+    final shodanUrl = Uri.parse("https://account.shodan.io/register");
     if (!await launchUrl(shodanUrl)) {
       throw Exception('Could not launch $shodanUrl');
     }
@@ -44,70 +36,108 @@ class _AccountPageState extends State<AccountPage> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: Container(
-          margin: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              buildHeader(context),
-              buildInputField(context),
-              buildSignup(context),
-            ],
-          ),
+        body: LayoutBuilder(
+          builder: (context, BoxConstraints constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Container(
+                  margin: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      buildHeader(context),
+                      buildInputField(context),
+                      const SizedBox(),
+                      buildSignup(context),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }
         ),
       ),
     );
   }
 
   buildHeader(context) {
-    return Consumer<ShodanAccountService>(builder: (context, shodanAccountService, child) {
-      if (shodanAccountService.state == ShodanAccountState.loading) {
-        return const CircularProgressIndicator();
-      } else if (shodanAccountService.state == ShodanAccountState.authenticated) {
-        String accountName =
-            "Hi, ${shodanAccountService.shodanAccount!.plan.isNotEmpty ? shodanAccountService.shodanAccount!.plan : "anonymous fella"}";
-        return Column(
-          children: [
-            Text(
+    return Center(
+      child: Consumer<ShodanAccountService>(
+          builder: (context, shodanAccountService, child) {
+        if (shodanAccountService.state == ShodanAccountState.loading) {
+          return const CircularProgressIndicator();
+        } else if (shodanAccountService.state ==
+            ShodanAccountState.authenticated) {
+          String accountName =
+              "Hi, ${shodanAccountService.shodanAccount!.plan.isNotEmpty ? shodanAccountService.shodanAccount!.plan : "anonymous fella"}";
+          return Column(
+            children: [
+              Text(
                 accountName,
-                style: const TextStyle(
-                    fontSize: 40, fontWeight: FontWeight.bold),
-            ),
-            Flex(
-              direction: _isScreenWide ? Axis.horizontal : Axis.vertical,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                CircularUsageWidget(currentUsage: shodanAccountService.shodanAccount!.scanCreditsLeft, maxUsage: 100, name: "scan credit(s)"),
-                CircularUsageWidget(currentUsage: shodanAccountService.shodanAccount!.queryCreditsLeft, maxUsage: 100, name: "query credit(s)"),
-                CircularUsageWidget(currentUsage: shodanAccountService.shodanAccount!.amountOfMonitoredIps, maxUsage: 100, name: "monitored IP(s)"),
-              ],
-            ),
-          ],
-        );
-      } else {
-        return const Column(
-          children: [
-            Text(
-              "Can't show you anything if you don't log-in first, chief.",
-              overflow: TextOverflow.visible,
-              style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
-            ),
-          ],
-        );
-      }
-    });
+                style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+              ),
+              Flex(
+                direction: _isScreenWide ? Axis.horizontal : Axis.vertical,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CircularUsageWidget(
+                        currentUsage:
+                            shodanAccountService.shodanAccount!.scanCreditsLeft,
+                        maxUsage: 100,
+                        name: "scan credit(s)"),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CircularUsageWidget(
+                        currentUsage:
+                            shodanAccountService.shodanAccount!.queryCreditsLeft,
+                        maxUsage: 100,
+                        name: "query credit(s)"),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CircularUsageWidget(
+                        currentUsage: shodanAccountService
+                            .shodanAccount!.amountOfMonitoredIps,
+                        maxUsage: 100,
+                        name: "monitored IP(s)"),
+                  ),
+                ],
+              ),
+            ],
+          );
+        } else {
+          return const Column(
+            children: [
+              Text(
+                "Can't show you anything if you don't log-in first, chief.",
+                overflow: TextOverflow.visible,
+                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+              ),
+            ],
+          );
+        }
+      }),
+    );
   }
 
   buildInputField(context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: MainAxisSize.max,
       children: [
         const SizedBox(height: 10),
-        Consumer<ShodanAccountService>(builder: (context, shodanAccountService, child) {
+        Consumer<ShodanAccountService>(
+          builder: (context, shodanAccountService, child) {
             if (shodanAccountService.state == ShodanAccountState.loading) {
               return const CircularProgressIndicator();
+            } else if (shodanAccountService.state ==
+                ShodanAccountState.authenticated) {
+              return const SizedBox.shrink(); // so that nothing appears
             } else {
               _apiKeyController.text = shodanAccountService.apiKey;
 
@@ -125,25 +155,34 @@ class _AccountPageState extends State<AccountPage> {
                         : null),
                 obscureText: true,
                 controller: _apiKeyController,
-                onChanged: (String newText) => shodanAccountService.setApiKey(_apiKeyController.text),
+                onChanged: (String newText) =>
+                    shodanAccountService.setApiKey(_apiKeyController.text),
               );
             }
           },
         ),
         const SizedBox(height: 10),
         Consumer<ShodanAccountService>(
-            builder: (context, shodanAccountService, child) {
-          return ElevatedButton(
-            onPressed: shodanAccountService.error == null ? _submit : null,
-            style: ElevatedButton.styleFrom(
-              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
-              backgroundColor: Colors.purple,
-            ),
-            child: const Text(
-              "Log-in",
-              style: TextStyle(fontSize: 20),
-            ),
+          builder: (context, shodanAccountService, child) {
+            dynamic callBack = null;
+            if (shodanAccountService.state == ShodanAccountState.authenticated) {
+              callBack = shodanAccountService.clearDetails;
+            } else if (shodanAccountService.error == null) {
+              callBack = shodanAccountService.reloadDetails;
+            }
+
+            return ElevatedButton(
+              onPressed: callBack,
+              style: ElevatedButton.styleFrom(
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(16))),
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+                backgroundColor: Colors.purple,
+              ),
+              child: Text(
+                shodanAccountService.state == ShodanAccountState.authenticated ? "Log-out" : "Log-in",
+                style: const TextStyle(fontSize: 20),
+              ),
           );
         })
       ],
@@ -151,19 +190,28 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   buildSignup(context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text("You don't have an API key yet?"),
-        TextButton(
-          onPressed: _launchUrl,
-          child: const Text(
-            "Get one here, or create yourself an account",
-            overflow: TextOverflow.visible,
-            style: TextStyle(color: Colors.purple),
-          )
-        )
-      ],
+    return Selector<ShodanAccountService, ShodanAccountState>(
+        selector: (_, shodanAccountService) => shodanAccountService.state,
+        builder: (context, shodanAccountState, child) 
+      {
+        if (shodanAccountState == ShodanAccountState.authenticated) {
+          return const SizedBox.shrink();
+        } else {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text("You don't have an API key yet?"),
+              TextButton(
+                  onPressed: _launchUrl,
+                  child: const Text(
+                    "Get one here, or create yourself an account",
+                    overflow: TextOverflow.visible,
+                    style: TextStyle(color: Colors.purple),
+                  ))
+            ],
+          );
+        }
+      }
     );
   }
 }

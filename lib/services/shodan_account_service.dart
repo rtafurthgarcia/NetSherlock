@@ -54,6 +54,19 @@ class ShodanAccountService extends ChangeNotifier {
     reloadDetails();
   }
 
+  void clearDetails() async {
+    _state = ShodanAccountState.loading;
+    notifyListeners();
+
+    _state = ShodanAccountState.initial;
+    _error = null;
+    _apiKey = "";
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(API_KEY_SETTINGS, "");
+
+    notifyListeners();
+  }
+
   void reloadDetails() async {
     _state = ShodanAccountState.loading;
     notifyListeners();

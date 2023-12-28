@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:netsherlock/models/shodan_account_model.dart';
 import 'package:netsherlock/pages/account_page.dart';
 import 'package:netsherlock/services/shodan_account_service.dart';
 import 'package:provider/provider.dart';
@@ -46,14 +45,9 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
   Widget displayProperScreen() {
     switch (screenIndex) {
       case 0:
-        /*return ChangeNotifierProvider(
-          create: (context) => ShodanAccount.fetchAccountDetails(apiKey: "7fwa4uzY9aO4LCDMRLGxRgGgGRLFcxik"),
-          child: AccountPage(),
-        );*/
-        return AccountPage();
-        break;
+        return const AccountPage();
       default:
-        return AccountPage();
+        return const AccountPage();
     }
   }
 

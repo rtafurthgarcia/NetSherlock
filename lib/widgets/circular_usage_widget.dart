@@ -23,11 +23,8 @@ class CircularUsageWidget extends StatelessWidget {
       width: 150,
       selectedStepSize: 15,
       roundedCap: (_, __) => true,
-      gradientColor: const LinearGradient(
-        begin: Alignment.topRight,
-        end: Alignment.topLeft,
-        colors: [Colors.greenAccent, Colors.redAccent],
-      ),
+      selectedColor: Colors.greenAccent,
+      unselectedColor: Colors.grey[200],
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(8.0),

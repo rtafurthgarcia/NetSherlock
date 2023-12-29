@@ -1,9 +1,14 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:netsherlock/consts.dart';
+import 'package:netsherlock/helpers.dart';
 import 'package:netsherlock/services/shodan_account_service.dart';
 import 'package:netsherlock/widgets/circular_usage_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:io' show Platform;
+import 'package:mobile_scanner/mobile_scanner.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({Key? key}) : super(key: key);
@@ -67,10 +72,13 @@ class _AccountPageState extends State<AccountPage> {
           builder: (context, shodanAccountService, child) {
         if (shodanAccountService.state == ShodanAccountState.loading) {
           return const CircularProgressIndicator();
-        } else if (shodanAccountService.state ==
-            ShodanAccountState.authenticated) {
+        } else if (shodanAccountService.state == ShodanAccountState.authenticated) {
           String accountName =
               "Hi, ${shodanAccountService.shodanAccount!.plan.isNotEmpty ? shodanAccountService.shodanAccount!.plan : "anonymous fella"}";
+          final usedScanCredits = shodanAccountService.shodanAccount!.usageLimits.scanCredits - shodanAccountService.shodanAccount!.scanCreditsLeft;
+          final usedQueryCredits = shodanAccountService.shodanAccount!.usageLimits.queryCredits - shodanAccountService.shodanAccount!.queryCreditsLeft;
+          final monitoredIps = shodanAccountService.shodanAccount!.usageLimits.monitoredIps - shodanAccountService.shodanAccount!.amountOfMonitoredIps;
+
           return Column(
             children: [
               Text(
@@ -85,26 +93,26 @@ class _AccountPageState extends State<AccountPage> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: CircularUsageWidget(
-                        currentUsage:
-                            shodanAccountService.shodanAccount!.scanCreditsLeft,
-                        maxUsage: 100,
-                        name: "scan credit(s)"),
+                        currentUsage: usedScanCredits,
+                        maxUsage: shodanAccountService.shodanAccount!.usageLimits.scanCredits,
+                        name: "scan credit(s)", 
+                        message: "used."),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: CircularUsageWidget(
-                        currentUsage:
-                            shodanAccountService.shodanAccount!.queryCreditsLeft,
-                        maxUsage: 100,
-                        name: "query credit(s)"),
+                        currentUsage: usedQueryCredits,
+                        maxUsage: shodanAccountService.shodanAccount!.usageLimits.queryCredits,
+                        name: "query credit(s)",
+                        message: "used."),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: CircularUsageWidget(
-                        currentUsage: shodanAccountService
-                            .shodanAccount!.amountOfMonitoredIps,
-                        maxUsage: 100,
-                        name: "monitored IP(s)"),
+                        currentUsage: monitoredIps,
+                        maxUsage: shodanAccountService.shodanAccount!.usageLimits.monitoredIps,
+                        name: "monitored IP(s)",
+                        message: "left."),
                   ),
                 ],
               ),
@@ -143,16 +151,24 @@ class _AccountPageState extends State<AccountPage> {
 
               return TextField(
                 decoration: InputDecoration(
-                    hintText: "Shodan API Key",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(18),
-                        borderSide: BorderSide.none),
-                    fillColor: Colors.purple.withOpacity(0.1),
-                    filled: true,
-                    prefixIcon: const Icon(Icons.key),
-                    errorText: shodanAccountService.error != null
-                        ? shodanAccountService.error.toString()
-                        : null),
+                  hintText: "Shodan API Key",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: BorderSide.none),
+                  fillColor: Colors.purple.withOpacity(0.1),
+                  filled: true,
+                  prefixIcon: const Icon(Icons.key),
+                  errorText: shodanAccountService.error != null
+                    ? shodanAccountService.error.toString()
+                    : null,
+                  suffixIcon: Helpers.isPlateformValidForQr() ? IconButton(
+                    onPressed: () => Overlay.of(context).insert(buildQRCodeScanner(context)),
+                    icon: const Icon(
+                      Icons.qr_code_scanner,
+                      color: Colors.blue,
+                    ),
+                  ) : null,
+                ),
                 obscureText: true,
                 controller: _apiKeyController,
                 onChanged: (String newText) =>
@@ -213,5 +229,22 @@ class _AccountPageState extends State<AccountPage> {
         }
       }
     );
+  }
+
+  OverlayEntry buildQRCodeScanner(BuildContext context) {
+    return OverlayEntry(
+      builder: (context) {
+        // Your custom widget goes here
+        return MobileScanner(
+          onDetect: (capture) {
+            final List<Barcode> barcodes = capture.barcodes;
+            final Uint8List? image = capture.image;
+            for (final barcode in barcodes) {
+              debugPrint('Barcode found! ${barcode.rawValue}');
+            }
+          }
+        );
+      }
+    );   
   }
 }

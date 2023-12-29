@@ -2,23 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 
 class CircularUsageWidget extends StatelessWidget {
-  final int currentUsage;
-  final int maxUsage;
-  final String name;
+  final int _currentUsage;
+  final int _maxUsage;
+  final String _name;
+  final String _message;
+
+  int get currentUsage => _currentUsage;
+  int get maxUsage => _maxUsage;
+  String get name => _name;
+  String get message => _message;
 
   const CircularUsageWidget(
-      {super.key,
-      required this.currentUsage,
-      required this.maxUsage,
-      required this.name});
+    {super.key,
+    required int currentUsage,
+    required int maxUsage,
+    required String name,
+    required String message
+  }) : _name = name, _maxUsage = maxUsage, _currentUsage = currentUsage, _message = message;
 
   @override
   Widget build(BuildContext context) {
     return CircularStepProgressIndicator(
-      totalSteps: maxUsage,
-      currentStep: currentUsage,
+      totalSteps: _maxUsage,
+      currentStep: _currentUsage,
       stepSize: 1,
-      padding: 10,
+      padding: 0,
       height: 150,
       width: 150,
       selectedStepSize: 15,
@@ -30,7 +38,7 @@ class CircularUsageWidget extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Text(
             softWrap: true,
-            "$currentUsage $name left.",
+            "$_currentUsage $_name $_message",
             style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
           ),
         ),

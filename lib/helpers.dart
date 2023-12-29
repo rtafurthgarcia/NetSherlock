@@ -15,4 +15,16 @@ class Helpers {
       return false;
     }
   }
+
+  static bool isDesktop() {
+    if (Platform.isWindows) {
+      return true;
+    } else if (Platform.isLinux) {
+      return true;
+    } else if (Platform.isMacOS) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

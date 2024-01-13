@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:netsherlock/color_schemes.g.dart';
 import 'package:netsherlock/helpers.dart';
 import 'package:netsherlock/services/shodan_account_service.dart';
 import 'package:netsherlock/widgets/navigationdrawer_widget.dart';
@@ -7,6 +8,7 @@ import 'package:window_manager/window_manager.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   // Must add this line.
   if (Helpers.isDesktop()) {
     await windowManager.ensureInitialized();
@@ -31,12 +33,13 @@ Future<void> main() async {
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: true,
-      theme: ThemeData(useMaterial3: true),
-      home: ChangeNotifierProvider(
+     return MaterialApp(
+      theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
+      darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
+       home: ChangeNotifierProvider(
         create: (context) => ShodanAccountService(),
         child: const AppNavigationDrawer(),
       ),

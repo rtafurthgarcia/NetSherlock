@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:netsherlock/models/shodan_account_model.dart';
 import 'package:netsherlock/providers/shodan_account_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 enum ShodanAccountState { initial, loading, authenticated, error }
 
@@ -12,6 +12,11 @@ class ShodanAccountService extends ChangeNotifier {
   String _apiKey = "";
   dynamic _error;
   ShodanAccount? shodanAccount;
+  final FlutterSecureStorage _storage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    )
+  );
 
   String get apiKey => _apiKey;
   ShodanAccountState get state => _state;
@@ -22,8 +27,7 @@ class ShodanAccountService extends ChangeNotifier {
       return;
     }
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(API_KEY_SETTINGS, newApiKey);
+    await _storage.write(key: API_KEY_SETTINGS, value: newApiKey);
 
     _apiKey = newApiKey;
     
@@ -61,8 +65,7 @@ class ShodanAccountService extends ChangeNotifier {
     _state = ShodanAccountState.initial;
     _error = null;
     _apiKey = "";
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString(API_KEY_SETTINGS, "");
+    await _storage.write(key: API_KEY_SETTINGS, value: "");
 
     notifyListeners();
   }
@@ -71,8 +74,7 @@ class ShodanAccountService extends ChangeNotifier {
     _state = ShodanAccountState.loading;
     notifyListeners();
 
-    final prefs = await SharedPreferences.getInstance();
-    _apiKey = prefs.getString(API_KEY_SETTINGS) ?? "";
+    _apiKey = await _storage.read(key: API_KEY_SETTINGS) ?? "";
 
     if (_apiKey.isEmpty) {
       _state = ShodanAccountState.initial;

@@ -1,15 +1,11 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:netsherlock/consts.dart';
 import 'package:netsherlock/helpers.dart';
 import 'package:netsherlock/services/shodan_account_service.dart';
 import 'package:netsherlock/widgets/circular_usage_widget.dart';
-import 'package:netsherlock/widgets/mobile_scanner_overlay.dart';
+import 'package:netsherlock/widgets/qr_code_scanner_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:io' show Platform;
-import 'package:mobile_scanner/mobile_scanner.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({Key? key}) : super(key: key);
@@ -97,20 +93,20 @@ class _AccountPageState extends State<AccountPage> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: CircularUsageWidget(
-                        currentUsage: usedScanCredits,
-                        maxUsage: shodanAccountService
-                            .shodanAccount!.usageLimits.scanCredits,
-                        name: "scan credit(s)",
-                        message: "used."),
+                      currentUsage: usedScanCredits,
+                      maxUsage: shodanAccountService
+                          .shodanAccount!.usageLimits.scanCredits,
+                      name: "scan credit(s)",
+                      message: "used."),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: CircularUsageWidget(
-                        currentUsage: usedQueryCredits,
-                        maxUsage: shodanAccountService
-                            .shodanAccount!.usageLimits.queryCredits,
-                        name: "query credit(s)",
-                        message: "used."),
+                      currentUsage: usedQueryCredits,
+                      maxUsage: shodanAccountService
+                          .shodanAccount!.usageLimits.queryCredits,
+                      name: "query credit(s)",
+                      message: "used."),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -160,29 +156,28 @@ class _AccountPageState extends State<AccountPage> {
                 decoration: InputDecoration(
                   hintText: "Shodan API Key",
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(18),
-                      borderSide: BorderSide.none),
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: BorderSide.none),
                   fillColor: Colors.purple.withOpacity(0.1),
                   filled: true,
                   prefixIcon: const Icon(Icons.key),
                   errorText: shodanAccountService.error != null
-                      ? shodanAccountService.error.toString()
-                      : null,
+                    ? shodanAccountService.error.toString()
+                    : null,
                   suffixIcon: Helpers.isPlateformValidForQr()
-                      ? IconButton(
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    BarcodeScannerWithOverlay(),
-                              ),
-                            );
-                          },
-                          icon: const Icon(
-                            Icons.qr_code_scanner,
-                          ),
-                        )
-                      : null,
+                    ? IconButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => BarcodeScannerWithOverlay(shodanAccountService: shodanAccountService),
+                            ),
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.qr_code_scanner,
+                        ),
+                      )
+                    : null,
                 ),
                 obscureText: true,
                 controller: _apiKeyController,
@@ -222,6 +217,8 @@ class _AccountPageState extends State<AccountPage> {
         builder: (context, shodanAccountState, child) {
           if (shodanAccountState == ShodanAccountState.authenticated) {
             return const SizedBox.shrink();
+          } else if (shodanAccountState == ShodanAccountState.loading) {
+            return const CircularProgressIndicator();
           } else {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,

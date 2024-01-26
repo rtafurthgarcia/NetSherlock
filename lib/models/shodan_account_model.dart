@@ -1,34 +1,52 @@
-class ShodanAccount {
-  late int _creditsLeft;
-  late bool _isMember;
-  late String _accountName;
-  late DateTime _creationDate;
+import 'package:netsherlock/models/shodan_account_usage_limits_model.dart';
 
-  int get creditsLeft => _creditsLeft;
+class ShodanAccount {
+  late int _scanCreditsLeft;
+  late int _queryCreditsLeft;
+  late int _amountOfMonitoredIps;
+  late String _plan;
+  late bool _isMember;
+  late ShodanAccountUsageLimits _usageLimits;
+
+  int get scanCreditsLeft => _scanCreditsLeft;
+  int get queryCreditsLeft => _queryCreditsLeft;
+  int get amountOfMonitoredIps => _amountOfMonitoredIps;
+  String get plan => _plan;
   bool get isMember => _isMember;
-  String get accountName => _accountName;
-  DateTime get creationDate => _creationDate;
+  ShodanAccountUsageLimits get usageLimits => _usageLimits;
 
   ShodanAccount();
 
-  ShodanAccount._({required int creditsLeft, required bool isMember, required String accountName, required DateTime creationDate}):
-    _creditsLeft = creditsLeft, _isMember = isMember, _accountName = accountName, _creationDate = creationDate;
+  ShodanAccount._(
+      {required int scanCreditsLeft,
+      required int queryCreditsLeft,
+      required int amountOfMonitoredIps,
+      required String currentPlan,
+      required bool isMember,
+      required ShodanAccountUsageLimits usageLimits})
+      : _scanCreditsLeft = scanCreditsLeft,
+        _queryCreditsLeft = queryCreditsLeft,
+        _amountOfMonitoredIps = amountOfMonitoredIps,
+        _plan = currentPlan,
+        _isMember = isMember,
+        _usageLimits = usageLimits;
 
   factory ShodanAccount.fromJson(Map<String, dynamic> json) {
     return switch (json) {
       {
-        'member': bool isMember,
-        'credits': int creditsLeft,
-        'display_name': String? accountName,
-        'created': String creationDate
+        'scan_credits': int scanCreditsLeft,
+        'query_credits': int queryCreditsLeft,
+        'monitored_ips': int amountOfMonitoredIps,
+        'plan': String plan,
+        'unlocked': bool isMember,
       } =>
         ShodanAccount._(
-          accountName: accountName ?? '',
-          creditsLeft: creditsLeft,
-          isMember: isMember,
-          creationDate: DateTime.parse(creationDate)
-        ),
-
+            scanCreditsLeft: scanCreditsLeft,
+            queryCreditsLeft: queryCreditsLeft,
+            amountOfMonitoredIps: amountOfMonitoredIps,
+            currentPlan: plan,
+            isMember: isMember,
+            usageLimits: ShodanAccountUsageLimits.fromJson(json['usage_limits'])),
       _ => throw Exception('Failed to load account details.'),
     };
   }

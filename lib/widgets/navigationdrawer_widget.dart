@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:netsherlock/models/shodan_account_model.dart';
 import 'package:netsherlock/pages/account_page.dart';
 import 'package:netsherlock/services/shodan_account_service.dart';
 import 'package:provider/provider.dart';
+import 'package:netsherlock/consts.dart';
 
 class DrawerDestination {
   const DrawerDestination(this.label, this.icon, this.selectedIcon);
@@ -45,14 +45,9 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
   Widget displayProperScreen() {
     switch (screenIndex) {
       case 0:
-        /*return ChangeNotifierProvider(
-          create: (context) => ShodanAccount.fetchAccountDetails(apiKey: "7fwa4uzY9aO4LCDMRLGxRgGgGRLFcxik"),
-          child: AccountPage(),
-        );*/
-        return AccountPage();
-        break;
+        return const AccountPage();
       default:
-        return AccountPage();
+        return const AccountPage();
     }
   }
 
@@ -73,9 +68,9 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
             String userAccount = "Not connected.";
             String creditsMessage = "";
 
-            if (shodanAccountService.isAuthenticated) {
-              userAccount = shodanAccountService.shodanAccount!.accountName.isNotEmpty ? shodanAccountService.shodanAccount!.accountName : "Anonymous";
-              creditsMessage = "${shodanAccountService.shodanAccount!.creditsLeft} credit(s) left";
+            if (shodanAccountService.state == ShodanAccountState.authenticated) {
+              userAccount = shodanAccountService.shodanAccount!.plan.isNotEmpty ? shodanAccountService.shodanAccount!.plan : "Anonymous";
+              creditsMessage = "${shodanAccountService.shodanAccount!.scanCreditsLeft} credit(s) left";
             }
 
             return UserAccountsDrawerHeader(
@@ -147,7 +142,7 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    showNavigationDrawer = MediaQuery.of(context).size.width >= 600;
+    showNavigationDrawer = MediaQuery.of(context).size.width >= Consts.MAX_SCREEN_WIDTH;
   }
 
   @override

@@ -1,20 +1,25 @@
 import 'package:flutter/widgets.dart';
 import 'package:netsherlock/models/shodan_account_model.dart';
 import 'package:netsherlock/providers/shodan_account_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+enum ShodanAccountState { initial, loading, authenticated, error }
 
 class ShodanAccountService extends ChangeNotifier {
   static const API_KEY_SETTINGS = "key";
 
-  bool _isLoading = true;
-  bool _isAuthenticated = false;
+  ShodanAccountState _state = ShodanAccountState.initial;
   String _apiKey = "";
   dynamic _error;
   ShodanAccount? shodanAccount;
+  final FlutterSecureStorage _storage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    )
+  );
 
-  bool get isLoading => _isLoading;
-  bool get isAuthenticated => _isAuthenticated;
   String get apiKey => _apiKey;
+  ShodanAccountState get state => _state;
   dynamic get error => _error;
 
   void setApiKey(String newApiKey) async {
@@ -22,19 +27,23 @@ class ShodanAccountService extends ChangeNotifier {
       return;
     }
 
-    if (isApiKeyValid(newApiKey) != null) {
-      return;
-    }
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(API_KEY_SETTINGS, newApiKey);
+    await _storage.write(key: API_KEY_SETTINGS, value: newApiKey);
 
     _apiKey = newApiKey;
-    _error = null;
+    
+    final validationMessage = validateApiKey(apiKey);
+    if (validationMessage == null) {
+      _state = ShodanAccountState.initial;
+      _error = null;
+    } else {
+      _state = ShodanAccountState.error;
+      _error = validationMessage;
+    }
+
     notifyListeners();
   }
 
-  static String? isApiKeyValid(String apiKey) {
+  static String? validateApiKey(String apiKey) {
     if (apiKey.isEmpty) {
       return 'Can\'t be empty';
     }
@@ -49,29 +58,47 @@ class ShodanAccountService extends ChangeNotifier {
     reloadDetails();
   }
 
-  void notify() => notifyListeners();
+  void clearDetails() async {
+    _state = ShodanAccountState.loading;
+    notifyListeners();
+
+    _state = ShodanAccountState.initial;
+    _error = null;
+    _apiKey = "";
+    await _storage.write(key: API_KEY_SETTINGS, value: "");
+
+    notifyListeners();
+  }
 
   void reloadDetails() async {
-    SharedPreferences.getInstance()
-        .then((prefs) async {
-          _apiKey = prefs.getString(API_KEY_SETTINGS) ?? "";
+    _state = ShodanAccountState.loading;
+    notifyListeners();
 
-          if (apiKey.isNotEmpty) {
-            return await ShodanAccountProvider.fetchAccountDetails(
-                apiKey: apiKey);
-          } else {
-            _isLoading = false;
-          }
-        })
-        .then((loadedShodanAccount) => shodanAccount = loadedShodanAccount)
-        .catchError((error, stackTrace) => _error = error)
-        .whenComplete(() {
-          if (shodanAccount != null) {
-            _isAuthenticated = true;
-          }
-          _isLoading = false;
-          notifyListeners();
-        });
+    _apiKey = await _storage.read(key: API_KEY_SETTINGS) ?? "";
+
+    if (_apiKey.isEmpty) {
+      _state = ShodanAccountState.initial;
+      notifyListeners();
+      return;
+    }
+
+    final validationMessage = validateApiKey(_apiKey);
+    if (validationMessage != null) {
+      _error = validationMessage;
+      _state = ShodanAccountState.error;
+      notifyListeners();
+      return;
+    }
+
+    try {
+      shodanAccount =
+          await ShodanAccountProvider.fetchAccountDetails(apiKey: apiKey);
+
+      _state = ShodanAccountState.authenticated;
+    } catch (exception) {
+      _state = ShodanAccountState.error;
+      _error = exception;
+    }
 
     notifyListeners();
   }

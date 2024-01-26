@@ -169,7 +169,16 @@ class _AccountPageState extends State<AccountPage> {
                         onPressed: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => BarcodeScannerWithOverlay(shodanAccountService: shodanAccountService),
+                              builder: (context) => BarcodeScannerWithOverlay(
+                                onQrCodeDetected: (newApiKey) {
+                                  if (newApiKey == null || ShodanAccountService.validateApiKey(newApiKey) != null) {
+                                    return;
+                                  }
+
+                                  shodanAccountService.setApiKey(newApiKey);
+                                  shodanAccountService.load();
+                                  Navigator.pop(context);
+                                }),
                             ),
                           );
                         },
@@ -194,7 +203,7 @@ class _AccountPageState extends State<AccountPage> {
           if (shodanAccountService.state == ShodanAccountState.authenticated) {
             callBack = shodanAccountService.clearDetails;
           } else if (shodanAccountService.error == null) {
-            callBack = shodanAccountService.reloadDetails;
+            callBack = shodanAccountService.load;
           }
 
           return FilledButton(

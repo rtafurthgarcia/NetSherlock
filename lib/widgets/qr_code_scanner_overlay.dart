@@ -4,9 +4,8 @@ import 'package:netsherlock/services/shodan_account_service.dart';
 import 'package:qr_mobile_vision/qr_camera.dart';
 
 class BarcodeScannerWithOverlay extends StatefulWidget {
-  final ShodanAccountService shodanAccountService;
-
-  const BarcodeScannerWithOverlay({super.key, required this.shodanAccountService});
+  final void Function(String?) onQrCodeDetected;
+  const BarcodeScannerWithOverlay({super.key, required this.onQrCodeDetected});
 
   @override
   _BarcodeScannerWithOverlayState createState() =>
@@ -32,16 +31,6 @@ class _BarcodeScannerWithOverlayState extends State<BarcodeScannerWithOverlay> {
     ]);
 
     super.dispose();
-  }
-
-  void onQrCodeDetected(String? newApiKey) {
-    if (newApiKey == null || ShodanAccountService.validateApiKey(newApiKey) != null) {
-      return;
-    }
-
-    widget.shodanAccountService.setApiKey(newApiKey);
-    widget.shodanAccountService.reloadDetails();
-    Navigator.pop(context);
   }
 
   @override
@@ -72,7 +61,7 @@ class _BarcodeScannerWithOverlayState extends State<BarcodeScannerWithOverlay> {
                       ),
                       formats: const [BarcodeFormats.QR_CODE],
                       cameraDirection: CameraDirection.BACK,
-                      qrCodeCallback: (value) => onQrCodeDetected(value),
+                      qrCodeCallback: (value) => widget.onQrCodeDetected(value),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.transparent,

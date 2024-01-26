@@ -55,7 +55,7 @@ class ShodanAccountService extends ChangeNotifier {
   }
 
   ShodanAccountService() {
-    reloadDetails();
+    load();
   }
 
   void clearDetails() async {
@@ -70,7 +70,7 @@ class ShodanAccountService extends ChangeNotifier {
     notifyListeners();
   }
 
-  void reloadDetails() async {
+  void load() async {
     _state = ShodanAccountState.loading;
     notifyListeners();
 

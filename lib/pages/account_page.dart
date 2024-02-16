@@ -35,7 +35,7 @@ class _AccountPageState extends State<AccountPage> {
     create: (context) => ShodanAccountService(),
     child: Scaffold(
       appBar: AppBar(title: const Text("NetSherlock")),
-      drawer: AppNavigationDrawer(),
+      drawer: const AppNavigationDrawer(),
       body: LayoutBuilder(builder: (context, BoxConstraints constraints) {
         return SingleChildScrollView(
           child: ConstrainedBox(

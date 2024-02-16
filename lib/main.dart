@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:netsherlock/color_schemes.g.dart';
 import 'package:netsherlock/helpers.dart';
 import 'package:netsherlock/pages/account_page.dart';
+import 'package:netsherlock/pages/alert_page.dart';
 import 'package:window_manager/window_manager.dart';
 
 Future<void> main() async {
@@ -39,7 +40,8 @@ class MainApp extends StatelessWidget {
       darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
       initialRoute: "/account",
       routes: {
-        "/account": (context) => const AccountPage()
+        "/account": (context) => const AccountPage(),
+        "/alerts": (context) => const AlertsPage()
       },
     );
   }

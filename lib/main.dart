@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:netsherlock/color_schemes.g.dart';
 import 'package:netsherlock/helpers.dart';
-import 'package:netsherlock/services/shodan_account_service.dart';
-import 'package:netsherlock/widgets/navigationdrawer_widget.dart';
-import 'package:provider/provider.dart';
+import 'package:netsherlock/pages/account_page.dart';
 import 'package:window_manager/window_manager.dart';
 
 Future<void> main() async {
@@ -39,10 +37,10 @@ class MainApp extends StatelessWidget {
      return MaterialApp(
       theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
       darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
-       home: ChangeNotifierProvider(
-        create: (context) => ShodanAccountService(),
-        child: const AppNavigationDrawer(),
-      ),
+      initialRoute: "/account",
+      routes: {
+        "/account": (context) => const AccountPage()
+      },
     );
   }
 }

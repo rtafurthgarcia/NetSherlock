@@ -1,26 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:netsherlock/pages/account_page.dart';
 import 'package:netsherlock/services/shodan_account_service.dart';
 import 'package:provider/provider.dart';
 import 'package:netsherlock/consts.dart';
 
 class DrawerDestination {
-  const DrawerDestination(this.label, this.icon, this.selectedIcon);
+  const DrawerDestination({required this.label, required this.icon, required this.selectedIcon, required this.routeName});
 
   final String label;
   final Widget icon;
   final Widget selectedIcon;
+  final String routeName;
 }
 
 const List<DrawerDestination> destinations = <DrawerDestination>[
-  DrawerDestination('Profile', Icon(Icons.account_circle_outlined),
-      Icon(Icons.account_circle)),
-  DrawerDestination('Alerts', Icon(Icons.warning_amber_outlined),
-      Icon(Icons.warning_amber)),
-  DrawerDestination('Scans', Icon(Icons.domain_verification_outlined),
-      Icon(Icons.domain_verification)),
-  DrawerDestination(
-      'DNS', Icon(Icons.dns_outlined), Icon(Icons.dns)),
+  DrawerDestination(label: 'Account', icon: Icon(Icons.account_circle_outlined), selectedIcon: Icon(Icons.account_circle), routeName: "/account"),
+  DrawerDestination(label: 'Alerts', icon: Icon(Icons.warning_amber_outlined), selectedIcon: Icon(Icons.warning_amber), routeName: "/alerts"),
+  DrawerDestination(label: 'Scans', icon: Icon(Icons.domain_verification_outlined), selectedIcon: Icon(Icons.domain_verification), routeName: "/scans"),
+  DrawerDestination(label: 'DNS', icon: Icon(Icons.dns_outlined), selectedIcon: Icon(Icons.dns), routeName: "/dns"),
 ];
 
 class AppNavigationDrawer extends StatefulWidget {
@@ -36,77 +32,57 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
   int screenIndex = 0;
   late bool showNavigationDrawer;
 
-  void updateScreenIndex(int selectedScreen) {
-    setState(() {
-      screenIndex = selectedScreen;
-    });
-  }
-
-  Widget displayProperScreen() {
-    switch (screenIndex) {
-      case 0:
-        return const AccountPage();
-      default:
-        return const AccountPage();
-    }
-  }
-
   void openDrawer() {
     scaffoldKey.currentState!.openEndDrawer();
   }
 
+  void updateRoute(int selectedIndex) {
+    setState(() {
+      screenIndex = selectedIndex;
+    });
+    Navigator.pop(context);
+    Navigator.pushNamed(context, destinations[selectedIndex].routeName); 
+  }
+
   Widget buildSideNavigationDrawer(BuildContext context) {
-    return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(title: const Text("NetSherlock")),
-      drawer: NavigationDrawer(
-        onDestinationSelected: updateScreenIndex,
-        selectedIndex: screenIndex,
-        children: <Widget>[
-          Consumer<ShodanAccountService>(
-          builder: (context, shodanAccountService, child) {
-            String userAccount = "Not connected.";
-            String creditsMessage = "";
+    return NavigationDrawer(
+      onDestinationSelected: updateRoute,
+      selectedIndex: screenIndex,
+      children: <Widget>[
+        Consumer<ShodanAccountService>(
+        builder: (context, shodanAccountService, child) {
+          String userAccount = "Not connected.";
+          String creditsMessage = "";
 
-            if (shodanAccountService.state == ShodanAccountState.authenticated) {
-              userAccount = shodanAccountService.shodanAccount!.plan.isNotEmpty ? shodanAccountService.shodanAccount!.plan : "Anonymous";
-              creditsMessage = "${shodanAccountService.shodanAccount!.scanCreditsLeft} credit(s) left";
-            }
+          if (shodanAccountService.state == ShodanAccountState.authenticated) {
+            userAccount = shodanAccountService.shodanAccount!.plan.isNotEmpty ? shodanAccountService.shodanAccount!.plan : "Anonymous";
+            creditsMessage = "${shodanAccountService.shodanAccount!.scanCreditsLeft} credit(s) left";
+          }
 
-            return UserAccountsDrawerHeader(
-              accountName: Text(creditsMessage),
-              accountEmail: Text(userAccount),
+          return UserAccountsDrawerHeader(
+            accountName: Text(creditsMessage),
+            accountEmail: Text(userAccount),
+          );
+        }),
+        ...destinations.map(
+          (DrawerDestination destination) {
+            return NavigationDrawerDestination(
+              label: Text(destination.label),
+              icon: destination.icon,
+              selectedIcon: destination.selectedIcon,
             );
-          }),
-          ...destinations.map(
-            (DrawerDestination destination) {
-              return NavigationDrawerDestination(
-                label: Text(destination.label),
-                icon: destination.icon,
-                selectedIcon: destination.selectedIcon,
-              );
-            },
-          ),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(28, 16, 28, 10),
-            child: Divider(),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: displayProperScreen(),
-          ),
-        ],
-      ),
+          },
+        ),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(28, 16, 28, 10),
+          child: Divider(),
+        ),
+      ],
     );
   }
 
   Widget buildStandardDrawerScaffold(BuildContext context) {
-    return Scaffold(
-      key: scaffoldKey,
-      body: SafeArea(
+    return SafeArea(
         bottom: false,
         top: false,
         child: Row(
@@ -125,18 +101,15 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
                       );
                     },
                   ).toList(),
-                  selectedIndex: screenIndex,
-                  useIndicator: true,
-                  onDestinationSelected: updateScreenIndex),
+                selectedIndex: screenIndex,
+                useIndicator: true,
+                onDestinationSelected: updateRoute,
+              )
             ),
-            const VerticalDivider(thickness: 1, width: 1),
-            Expanded(
-              child: displayProperScreen(),
-            ),
+            const VerticalDivider(thickness: 1, width: 1)
           ],
         ),
-      ),
-    );
+      );
   }
 
   @override

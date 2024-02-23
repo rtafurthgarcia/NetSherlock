@@ -17,9 +17,6 @@ class ShodanAPIProvider {
 
     final response = await http.get(
       Uri.parse("${Shared.API_URI}/api-info?key=$apiKey"),
-      /*headers: {
-        HttpHeaders.authorizationHeader: apiKey,
-      },*/
     );
     final responseJson = jsonDecode(response.body) as Map<String, dynamic>;
     ShodanAccount account = ShodanAccount.fromJson(responseJson);
@@ -27,9 +24,9 @@ class ShodanAPIProvider {
     return account;
   }
 
-  static Future<List<ShodanAlert>> fetchLatestAlerts({required String apiKey}) async {
+  static Future<List<ShodanAlert>> fetchLatestAlerts() async {
     final response = await http.get(
-      Uri.parse("${Shared.API_URI}/shodan/alert/info?key=$apiKey"),
+      Uri.parse("${Shared.API_URI}/shodan/alert/info?key=${Shared.apiKey}"),
     );
     final responseJson = jsonDecode(response.body);
     List<ShodanAlert> shodanAlerts = List<ShodanAlert>.from(responseJson.map((model)=> ShodanAlert.fromJson(model)));

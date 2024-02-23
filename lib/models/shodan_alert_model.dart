@@ -35,7 +35,7 @@ class ShodanAlert {
     return ShodanAlert(
       id: json['id'], 
       name: json['name'], 
-      created: DateTime.parse(json['created']) , 
-      expiration: DateTime.tryParse(json['expiration'] ?? ''));
+      created: DateTime.parse(json['created']), 
+      expiration: json['expires'] > 0 ? DateTime.parse(json['expiration']) : null);
   }
 }

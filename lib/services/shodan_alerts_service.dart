@@ -24,7 +24,7 @@ class ShodanAlertsService extends ChangeNotifier {
     }
 
      try {
-      alerts = await ShodanAPIProvider.fetchLatestAlerts(apiKey: Shared.apiKey);
+      alerts = await ShodanAPIProvider.fetchLatestAlerts();
 
       _state = ShodanServiceState.ok;
     } catch (exception) {

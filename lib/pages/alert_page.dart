@@ -5,6 +5,7 @@ import 'package:netsherlock/services/shodan_alerts_service.dart';
 import 'package:netsherlock/shared.dart';
 import 'package:netsherlock/widgets/custom_error_widget.dart';
 import 'package:netsherlock/widgets/navigationdrawer_widget.dart';
+import 'package:netsherlock/widgets/shodan_alert_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -48,10 +49,7 @@ class _AlertsPageState extends State<AlertsPage> {
                   padding: const EdgeInsets.all(24),
                   itemCount: alerts!.length,
                   itemBuilder: (BuildContext context, index) {
-                    return SizedBox(
-                      height: 50,
-                      child: Center(child: Text('Entry ${alerts[index].name}')),
-                    );
+                    return ShodanAlertWidget(alert: alerts[index]);
                   }
                 ),
               );

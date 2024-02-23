@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:netsherlock/services/shodan_account_service.dart';
 import 'package:provider/provider.dart';
-import 'package:netsherlock/consts.dart';
+import 'package:netsherlock/shared.dart';
 
 class DrawerDestination {
   const DrawerDestination({required this.label, required this.icon, required this.selectedIcon, required this.routeName});
@@ -20,7 +20,9 @@ const List<DrawerDestination> destinations = <DrawerDestination>[
 ];
 
 class AppNavigationDrawer extends StatefulWidget {
-  const AppNavigationDrawer({super.key});
+  AppNavigationDrawer({super.key});
+  
+  int screenIndex = 0;
 
   @override
   State<AppNavigationDrawer> createState() => AppNavigationDrawerState();
@@ -29,7 +31,6 @@ class AppNavigationDrawer extends StatefulWidget {
 class AppNavigationDrawerState extends State<AppNavigationDrawer> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-  int screenIndex = 0;
   late bool showNavigationDrawer;
 
   void openDrawer() {
@@ -38,7 +39,7 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
 
   void updateRoute(int selectedIndex) {
     setState(() {
-      screenIndex = selectedIndex;
+      widget.screenIndex = selectedIndex;
     });
     Navigator.pop(context);
     Navigator.pushNamed(context, destinations[selectedIndex].routeName); 
@@ -47,14 +48,14 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
   Widget buildSideNavigationDrawer(BuildContext context) {
     return NavigationDrawer(
       onDestinationSelected: updateRoute,
-      selectedIndex: screenIndex,
+      selectedIndex: widget.screenIndex,
       children: <Widget>[
         Consumer<ShodanAccountService>(
         builder: (context, shodanAccountService, child) {
           String userAccount = "Not connected.";
           String creditsMessage = "";
 
-          if (shodanAccountService.state == ShodanAccountState.authenticated) {
+          if (shodanAccountService.state == ShodanServiceState.authenticated) {
             userAccount = shodanAccountService.shodanAccount!.plan.isNotEmpty ? shodanAccountService.shodanAccount!.plan : "Anonymous";
             creditsMessage = "${shodanAccountService.shodanAccount!.scanCreditsLeft} credit(s) left";
           }
@@ -78,7 +79,7 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
           child: Divider(),
         ),
       ],
-    );
+      );
   }
 
   Widget buildStandardDrawerScaffold(BuildContext context) {
@@ -101,7 +102,7 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
                       );
                     },
                   ).toList(),
-                selectedIndex: screenIndex,
+                selectedIndex: widget.screenIndex,
                 useIndicator: true,
                 onDestinationSelected: updateRoute,
               )
@@ -115,7 +116,7 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    showNavigationDrawer = MediaQuery.of(context).size.width >= Consts.MAX_SCREEN_WIDTH;
+    showNavigationDrawer = MediaQuery.of(context).size.width >= Shared.MAX_SCREEN_WIDTH;
   }
 
   @override

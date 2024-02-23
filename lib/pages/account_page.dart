@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:netsherlock/consts.dart';
+import 'package:netsherlock/shared.dart';
 import 'package:netsherlock/helpers.dart';
 import 'package:netsherlock/services/shodan_account_service.dart';
 import 'package:netsherlock/widgets/circular_usage_widget.dart';
@@ -29,46 +29,47 @@ class _AccountPageState extends State<AccountPage> {
 
   @override
   Widget build(BuildContext context) {
-    _isScreenWide = MediaQuery.sizeOf(context).width >= Consts.MAX_SCREEN_WIDTH;
+    _isScreenWide = MediaQuery.sizeOf(context).width >= Shared.MAX_SCREEN_WIDTH;
 
     return ChangeNotifierProvider(
-    create: (context) => ShodanAccountService(),
-    child: Scaffold(
-      appBar: AppBar(title: const Text("NetSherlock")),
-      drawer: const AppNavigationDrawer(),
-      body: LayoutBuilder(builder: (context, BoxConstraints constraints) {
-        return SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: Container(
-              margin: const EdgeInsets.all(24),
-              child: Consumer<ShodanAccountService>(
-                  builder: (context, shodanAccountService, child) {
-                if (shodanAccountService.state ==
-                    ShodanAccountState.loading) {
-                  return Center(
-                      child: CircularProgressIndicator.adaptive());
-                } else {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      buildHeader(context, shodanAccountService),
-                      buildInputField(context, shodanAccountService),
-                      const SizedBox(),
-                      buildSignup(context, shodanAccountService),
-                    ],
-                  );
-                }
-              }),
+      create: (context) => ShodanAccountService(),
+      child: Scaffold(
+        appBar: AppBar(title: const Text("NetSherlock")),
+        drawer: AppNavigationDrawer(),
+        body: LayoutBuilder(builder: (context, BoxConstraints constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Container(
+                margin: const EdgeInsets.all(24),
+                child: Consumer<ShodanAccountService>(
+                    builder: (context, shodanAccountService, child) {
+                  if (shodanAccountService.state ==
+                      ShodanServiceState.loading) {
+                    return const Center(
+                        child: CircularProgressIndicator.adaptive());
+                  } else {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        buildHeader(context, shodanAccountService),
+                        buildInputField(context, shodanAccountService),
+                        const SizedBox(),
+                        buildSignup(context, shodanAccountService),
+                      ],
+                    );
+                  }
+                }),
+              ),
             ),
-          ),
-        );
-      }),
-    ));
+          );
+        }),
+      )
+    );
   }
 
   buildHeader(context, ShodanAccountService shodanAccountService) {
-    if (shodanAccountService.state == ShodanAccountState.initial) {
+    if (shodanAccountService.state == ShodanServiceState.initial) {
       return const Column(
         children: [
           Text(
@@ -147,10 +148,10 @@ class _AccountPageState extends State<AccountPage> {
         Builder(
           builder: (context) {
             if (shodanAccountService.state ==
-                ShodanAccountState.authenticated) {
+                ShodanServiceState.authenticated) {
               return const SizedBox.shrink(); // so that nothing appears
             } else {
-              _apiKeyController.text = shodanAccountService.apiKey;
+              _apiKeyController.text = Shared.apiKey;
 
               return TextField(
                 decoration: InputDecoration(
@@ -202,7 +203,7 @@ class _AccountPageState extends State<AccountPage> {
         const SizedBox(height: 10),
         Builder(builder: (context) {
           dynamic callBack;
-          if (shodanAccountService.state == ShodanAccountState.authenticated) {
+          if (shodanAccountService.state == ShodanServiceState.authenticated) {
             callBack = shodanAccountService.clearDetails;
           } else if (shodanAccountService.error == null) {
             callBack = shodanAccountService.load;
@@ -213,7 +214,7 @@ class _AccountPageState extends State<AccountPage> {
             style: FilledButton.styleFrom(
                 textStyle: const TextStyle(fontSize: 20)),
             child: Text(
-                shodanAccountService.state == ShodanAccountState.authenticated
+                shodanAccountService.state == ShodanServiceState.authenticated
                     ? "Log-out"
                     : "Log-in"),
           );
@@ -224,7 +225,7 @@ class _AccountPageState extends State<AccountPage> {
 
   buildSignup(context, ShodanAccountService shodanAccountService) {
     return Builder(builder: (context) {
-      if (shodanAccountService.state == ShodanAccountState.authenticated) {
+      if (shodanAccountService.state == ShodanServiceState.authenticated) {
         return const SizedBox.shrink();
       } else {
         return Column(

@@ -1,6 +1,6 @@
 import 'package:netsherlock/models/shodan_account_model.dart';
 
-import 'package:netsherlock/consts.dart';
+import 'package:netsherlock/shared.dart';
 import 'dart:async';
 import 'dart:convert';
 
@@ -15,7 +15,7 @@ class ShodanAccountProvider {
     }
 
     final response = await http.get(
-      Uri.parse("${Consts.API_URI}/api-info?key=$apiKey"),
+      Uri.parse("${Shared.API_URI}/api-info?key=$apiKey"),
       /*headers: {
         HttpHeaders.authorizationHeader: apiKey,
       },*/

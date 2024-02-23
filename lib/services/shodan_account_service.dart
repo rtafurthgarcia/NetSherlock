@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:netsherlock/models/shodan_account_model.dart';
-import 'package:netsherlock/providers/shodan_account_provider.dart';
+import 'package:netsherlock/providers/shodan_api_provider.dart';
 import 'package:netsherlock/shared.dart';
 
 class ShodanAccountService extends ChangeNotifier {
@@ -81,7 +81,7 @@ class ShodanAccountService extends ChangeNotifier {
 
     try {
       shodanAccount =
-          await ShodanAccountProvider.fetchAccountDetails(apiKey: Shared.apiKey);
+          await ShodanAPIProvider.fetchAccountDetails(apiKey: Shared.apiKey);
 
       _state = ShodanServiceState.authenticated;
     } catch (exception) {

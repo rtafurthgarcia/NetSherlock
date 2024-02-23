@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:netsherlock/providers/shodan_alerts_provider.dart';
+import 'package:netsherlock/providers/shodan_api_provider.dart';
 import 'package:netsherlock/shared.dart';
 import 'package:netsherlock/models/shodan_alert_model.dart';
 
@@ -24,7 +24,7 @@ class ShodanAlertsService extends ChangeNotifier {
     }
 
      try {
-      alerts = await ShodanAlertsProvider.fetchLatestAlerts(apiKey: Shared.apiKey);
+      alerts = await ShodanAPIProvider.fetchLatestAlerts(apiKey: Shared.apiKey);
 
       _state = ShodanServiceState.ok;
     } catch (exception) {

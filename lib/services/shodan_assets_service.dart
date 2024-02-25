@@ -62,4 +62,27 @@ class ShodanAssetsService extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  Future<void> deleteAsset(String assetId) async {
+    _state = ShodanState.loading;
+    notifyListeners();
+
+     if (Shared.apiKey.isEmpty) {
+      _state = ShodanState.unauthenticated;
+      notifyListeners();
+      return;
+    }
+
+    try {
+      await ShodanAPIProvider.deleteAsset(assetId);
+      assets.removeWhere((asset) => asset.id == assetId);
+
+      _state = ShodanState.ok;
+    } catch (exception) {
+      _state = ShodanState.error;
+      _error = exception;
+    }
+
+    notifyListeners();
+  }
 }

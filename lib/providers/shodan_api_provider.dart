@@ -51,4 +51,13 @@ class ShodanAPIProvider {
       return ShodanAsset.fromJson(responseJson);
     }
   }
+
+  static Future<void> deleteAsset(String assetId) async {
+    final response = await http.delete(
+      Uri.parse("${Shared.API_URI}/shodan/alert/$assetId?key=${Shared.apiKey}"),
+    );
+    if (response.statusCode != 200) {
+      throw const HttpException("Could not delete our asset");
+    } 
+  }
 }

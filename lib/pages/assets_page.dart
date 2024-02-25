@@ -35,12 +35,12 @@ class _AssetsPageState extends State<AssetsPage> {
           child: const Icon(Icons.add),
         ),
         body: Consumer<ShodanAssetsService>(
-          builder: (context, shodanAlertsService, child) {
-            if (shodanAlertsService.state == ShodanState.error) {
-              return CustomErrorWidget(errorMessage: shodanAlertsService.error.toString());
+          builder: (context, shodanAssetsservice, child) {
+            if (shodanAssetsservice.state == ShodanState.error) {
+              return CustomErrorWidget(errorMessage: shodanAssetsservice.error.toString());
             }
 
-            final alerts = shodanAlertsService.state == ShodanState.loading ? 
+            final assets = shodanAssetsservice.state == ShodanState.loading ? 
               List.generate(
                 5, (index) => ShodanAsset(
                   id: "FAKEFAKEFAKEFAKE",
@@ -49,17 +49,20 @@ class _AssetsPageState extends State<AssetsPage> {
                   expiration: DateTime.now().add(const Duration(days: 30)), 
                   ips: List<String>.from({"127.0.0.1", "127.0.0.2"})
                 )
-            ) : shodanAlertsService.assets;
+            ) : shodanAssetsservice.assets;
 
             return Skeletonizer(
-              enabled: shodanAlertsService.state == ShodanState.loading,
+              enabled: shodanAssetsservice.state == ShodanState.loading,
               child: RefreshIndicator(
-                onRefresh: () => _pullRefresh(shodanAlertsService),
+                onRefresh: () => _pullRefresh(shodanAssetsservice),
                 child: ListView.builder(
                   padding: const EdgeInsets.all(24),
-                  itemCount: alerts!.length,
+                  itemCount: assets!.length,
                   itemBuilder: (BuildContext context, index) {
-                    return ShodanAlertWidget(alert: alerts[index]);
+                    return ShodanAlertWidget(
+                      alert: assets[index],
+                      onDeleteAsset: () => shodanAssetsservice.deleteAsset(assets[index].id)
+                    );
                   }
                 ),
               ),

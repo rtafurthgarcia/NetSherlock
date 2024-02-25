@@ -63,10 +63,10 @@ class _AssetCreationPageState extends State<AssetCreationPage> {
                     const SizedBox(height: 16.0),
                     TextFormField(
                       controller: ipController,
-                      decoration: const InputDecoration(labelText: 'IP or Domain Name'),
+                      decoration: const InputDecoration(labelText: 'IP address(es), separated with a space'),
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'Please enter an IP or domain name';
+                          return 'Please enter an IP ';
                         }
                         return null;
                       },
@@ -78,10 +78,10 @@ class _AssetCreationPageState extends State<AssetCreationPage> {
                           onPressed: () async {
                             if (_formKey.currentState?.validate() ?? false) {
                               String title = titleController.text;
-                              String ip = ipController.text;
+                              List<String> ips = ipController.text.split(' ');
                   
                               await shodanAssetsService.createAsset(
-                                NewShodanAsset(name: title, ips: List<String>.from({ip}))
+                                NewShodanAsset(name: title, ips: ips)
                               );
 
                               if (shodanAssetsService.state == ShodanState.error) {

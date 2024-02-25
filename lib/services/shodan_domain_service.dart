@@ -1,10 +1,7 @@
 import 'package:flutter/widgets.dart';
-import 'package:netsherlock/models/new_shodan_asset_model.dart';
 import 'package:netsherlock/models/shodan_dns_entry.dart';
 import 'package:netsherlock/providers/shodan_api_provider.dart';
 import 'package:netsherlock/shared.dart';
-import 'package:netsherlock/models/shodan_asset_model.dart';
-import 'package:qr_mobile_vision/qr_camera.dart';
 
 class ShodanDomainService extends ChangeNotifier {
   ShodanState _state = ShodanState.initial;

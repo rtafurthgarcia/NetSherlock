@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:netsherlock/models/shodan_asset_model.dart';
-import 'package:netsherlock/models/shodan_dns_entry.dart';
 import 'package:netsherlock/services/shodan_account_service.dart';
-import 'package:netsherlock/services/shodan_assets_service.dart';
 import 'package:netsherlock/services/shodan_domain_service.dart';
 import 'package:netsherlock/shared.dart';
-import 'package:netsherlock/pages/asset_creation_page.dart';
-import 'package:netsherlock/widgets/custom_error_widget.dart';
 import 'package:netsherlock/widgets/navigationdrawer_widget.dart';
-import 'package:netsherlock/widgets/shodan_asset_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 

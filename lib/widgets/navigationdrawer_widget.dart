@@ -18,6 +18,7 @@ List<DrawerDestination> destinations = <DrawerDestination>[
   DrawerDestination(label: 'Assets', icon: const Icon(Icons.api_outlined), selectedIcon: const Icon(Icons.api), routeName: "/assets"),
   DrawerDestination(label: 'Scans', icon: const Icon(Icons.domain_verification_outlined), selectedIcon: const Icon(Icons.domain_verification), routeName: "/scans"),
   DrawerDestination(label: 'DNS', icon: const Icon(Icons.dns_outlined), selectedIcon: const Icon(Icons.dns), routeName: "/lookup"),
+  DrawerDestination(label: 'Bug report', icon: const Icon(Icons.bug_report_outlined), selectedIcon: const Icon(Icons.bug_report), routeName: "/bugreport", isHidden: true),
 ];
 
 class AppNavigationDrawer extends StatefulWidget {
@@ -95,6 +96,11 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
           padding: EdgeInsets.fromLTRB(28, 16, 28, 10),
           child: Divider(),
         ),
+        const NavigationDrawerDestination(
+          label: Text("Report a bug"),
+          icon: Icon(Icons.bug_report_outlined),
+          selectedIcon: Icon(Icons.bug_report),
+        )
       ],
       );
   }

@@ -25,6 +25,7 @@ dependencies:
   badges: ^2.0.3
   intl:
   sentry_flutter: ^7.16.1  
+  email_validator: '^2.1.16'
 
 dev_dependencies:
   flutter_test:

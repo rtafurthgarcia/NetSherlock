@@ -5,6 +5,7 @@ import 'package:netsherlock/helpers.dart';
 import 'package:netsherlock/pages/account_page.dart';
 import 'package:netsherlock/pages/asset_creation_page.dart';
 import 'package:netsherlock/pages/assets_page.dart';
+import 'package:netsherlock/pages/bug_report_page.dart';
 import 'package:netsherlock/pages/dns_page.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:window_manager/window_manager.dart';
@@ -55,7 +56,8 @@ class MainApp extends StatelessWidget {
         "/account": (context) => const AccountPage(),
         "/assets": (context) => const AssetsPage(),
         "/assets/new": (context) => const AssetCreationPage(),
-        "/lookup": (context) => const DNSPage()
+        "/lookup": (context) => const DNSPage(),
+        "/bugreport": (context) => const BugReportPage()
       },
     );
   }

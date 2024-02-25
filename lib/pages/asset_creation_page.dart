@@ -66,8 +66,25 @@ class _AssetCreationPageState extends State<AssetCreationPage> {
                       decoration: const InputDecoration(labelText: 'IP address(es), separated with a space'),
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'Please enter an IP ';
+                          return 'Please enter an IP address ';
                         }
+
+                        final possibleIpAddresses = value.split(" ");
+
+                        // IPv4 regex pattern
+                        final ipv4Pattern =
+                            RegExp(r'^(\d{1,3}\.){3}\d{1,3}$');
+
+                        // IPv6 regex pattern
+                        final ipv6Pattern = RegExp(
+                            r'^([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}$|^([0-9a-fA-F]{1,4}:){1,7}:|^([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}$|^([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}$|^([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}$|^([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}$|^([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}$|^[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})$|:^:((:[0-9a-fA-F]{1,4}){0,6})$');
+
+                        bool areIpsValid = possibleIpAddresses.every((ip) => (ipv4Pattern.hasMatch(ip) || ipv6Pattern.hasMatch(ip)));
+
+                        if(! areIpsValid) {
+                          return 'Enter a valid IPv4 or IPv6 address';
+                        }
+
                         return null;
                       },
                     ),

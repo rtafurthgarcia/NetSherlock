@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:netsherlock/models/shodan_alert_model.dart';
+import 'package:netsherlock/models/shodan_asset_model.dart';
 import 'package:netsherlock/services/shodan_account_service.dart';
-import 'package:netsherlock/services/shodan_alerts_service.dart';
+import 'package:netsherlock/services/shodan_assets_service.dart';
 import 'package:netsherlock/shared.dart';
 import 'package:netsherlock/widgets/custom_error_widget.dart';
 import 'package:netsherlock/widgets/navigationdrawer_widget.dart';
-import 'package:netsherlock/widgets/shodan_alert_widget.dart';
+import 'package:netsherlock/widgets/shodan_asset_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -35,11 +35,12 @@ class _AlertsPageState extends State<AlertsPage> {
 
               final alerts = shodanAlertsService.state == ShodanServiceState.loading ? 
                 List.generate(
-                  5, (index) => ShodanAlert(
+                  5, (index) => ShodanAsset(
                     id: "FAKEFAKEFAKEFAKE",
                     name: "New service",
                     created: DateTime.now(),
-                    expiration: DateTime.now().add(const Duration(days: 30))
+                    expiration: DateTime.now().add(const Duration(days: 30)), 
+                    ips: List<String>.from({"127.0.0.1", "127.0.0.2"})
                   )
               ) : shodanAlertsService.alerts;
 

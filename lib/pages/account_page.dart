@@ -181,7 +181,7 @@ class _AccountPageState extends State<AccountPage> {
 
                                   shodanAccountService.setApiKey(newApiKey);
                                   shodanAccountService.load();
-                                  Navigator.pop(context);
+                                  Navigator.of(context).canPop();
                                 }),
                               ),
                             );

@@ -1,5 +1,5 @@
 import 'package:netsherlock/models/shodan_account_model.dart';
-import 'package:netsherlock/models/shodan_alert_model.dart';
+import 'package:netsherlock/models/shodan_asset_model.dart';
 
 import 'package:netsherlock/shared.dart';
 import 'dart:async';
@@ -24,12 +24,12 @@ class ShodanAPIProvider {
     return account;
   }
 
-  static Future<List<ShodanAlert>> fetchLatestAlerts() async {
+  static Future<List<ShodanAsset>> fetchMonitoredAssets() async {
     final response = await http.get(
       Uri.parse("${Shared.API_URI}/shodan/alert/info?key=${Shared.apiKey}"),
     );
     final responseJson = jsonDecode(response.body);
-    List<ShodanAlert> shodanAlerts = List<ShodanAlert>.from(responseJson.map((model)=> ShodanAlert.fromJson(model)));
+    List<ShodanAsset> shodanAlerts = List<ShodanAsset>.from(responseJson.map((model)=> ShodanAsset.fromJson(model)));
 
     return shodanAlerts;
   }

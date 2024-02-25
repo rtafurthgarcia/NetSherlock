@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:netsherlock/models/shodan_alert_model.dart';
+import 'package:intl/intl.dart';
+import 'package:netsherlock/models/shodan_asset_model.dart';
+import 'package:intl/date_symbol_data_local.dart'; // for other locales
 
 class ShodanAlertWidget extends StatelessWidget {
-  final ShodanAlert alert;
+  final ShodanAsset alert;
 
   const ShodanAlertWidget({super.key, required this.alert});
 
@@ -20,7 +22,7 @@ class ShodanAlertWidget extends StatelessWidget {
       child: Row(
         children: [
           const Icon(
-            Icons.warning_rounded,
+            Icons.computer,
             size: 24.0,
             semanticLabel: 'Alert',
           ),
@@ -34,7 +36,22 @@ class ShodanAlertWidget extends StatelessWidget {
                     fontWeight: FontWeight.w800
                 ),),
                 const SizedBox(height: 4,),
-                Text(alert.created.toString(), style: Theme.of(context).textTheme.bodyMedium,)
+                Text(DateFormat.yMd('de').format(alert.created), style: Theme.of(context).textTheme.bodyMedium,),
+                Wrap(
+                  spacing: 8.0,
+                  children: [
+                  ...alert.ips.map((String ip) {
+                    return Chip(
+                      padding: const EdgeInsets.all(0),
+
+                      backgroundColor: Theme.of(context).colorScheme.onSecondary,
+                      label: Text(
+                        ip, 
+                        style: Theme.of(context).textTheme.labelSmall,
+                      )
+                    );
+                  })
+                ],)
               ],
             ),
           )

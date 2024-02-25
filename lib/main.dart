@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:netsherlock/color_schemes.g.dart';
 import 'package:netsherlock/helpers.dart';
 import 'package:netsherlock/pages/account_page.dart';
-import 'package:netsherlock/pages/alert_page.dart';
+import 'package:netsherlock/pages/assets_page.dart';
 import 'package:window_manager/window_manager.dart';
 
 Future<void> main() async {
@@ -35,6 +36,8 @@ class MainApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    initializeDateFormatting('de');
+
      return MaterialApp(
       theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
       darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),

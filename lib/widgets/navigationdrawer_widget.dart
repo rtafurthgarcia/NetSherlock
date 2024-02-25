@@ -4,19 +4,20 @@ import 'package:provider/provider.dart';
 import 'package:netsherlock/shared.dart';
 
 class DrawerDestination {
-  const DrawerDestination({required this.label, required this.icon, required this.selectedIcon, required this.routeName});
+  DrawerDestination({required this.label, required this.icon, required this.selectedIcon, required this.routeName, this.isHidden = false});
 
   final String label;
   final Widget icon;
   final Widget selectedIcon;
   final String routeName;
+  bool isHidden;
 }
 
-const List<DrawerDestination> destinations = <DrawerDestination>[
-  DrawerDestination(label: 'Account', icon: Icon(Icons.account_circle_outlined), selectedIcon: Icon(Icons.account_circle), routeName: "/account"),
-  DrawerDestination(label: 'Alerts', icon: Icon(Icons.warning_amber_outlined), selectedIcon: Icon(Icons.warning_amber), routeName: "/alerts"),
-  DrawerDestination(label: 'Scans', icon: Icon(Icons.domain_verification_outlined), selectedIcon: Icon(Icons.domain_verification), routeName: "/scans"),
-  DrawerDestination(label: 'DNS', icon: Icon(Icons.dns_outlined), selectedIcon: Icon(Icons.dns), routeName: "/dns"),
+List<DrawerDestination> destinations = <DrawerDestination>[
+  /*DrawerDestination(label: 'Account', icon: const Icon(Icons.account_circle_outlined), selectedIcon: const Icon(Icons.account_circle), routeName: "/account", isHidden: true),*/
+  DrawerDestination(label: 'Assets', icon: const Icon(Icons.api_outlined), selectedIcon: const Icon(Icons.api), routeName: "/alerts"),
+  DrawerDestination(label: 'Scans', icon: const Icon(Icons.domain_verification_outlined), selectedIcon: const Icon(Icons.domain_verification), routeName: "/scans"),
+  DrawerDestination(label: 'DNS', icon: const Icon(Icons.dns_outlined), selectedIcon: const Icon(Icons.dns), routeName: "/dns"),
 ];
 
 class AppNavigationDrawer extends StatefulWidget {
@@ -61,11 +62,27 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
           }
 
           return UserAccountsDrawerHeader(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.tertiary,
+            ),
             accountName: Text(creditsMessage),
             accountEmail: Text(userAccount),
+            onDetailsPressed: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/account'); 
+            },
+            currentAccountPicture: 
+              CircleAvatar(
+                backgroundColor: Theme.of(context).colorScheme.background,
+                child:Icon(
+                  Icons.account_circle,
+                  color: Theme.of(context).colorScheme.tertiary,
+                  size: 48,
+                ),
+              ),
           );
         }),
-        ...destinations.map(
+        ...destinations.where((destination) => !destination.isHidden).map(
           (DrawerDestination destination) {
             return NavigationDrawerDestination(
               label: Text(destination.label),
@@ -121,6 +138,8 @@ class AppNavigationDrawerState extends State<AppNavigationDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    widget.screenIndex = destinations.indexWhere((element) => element.routeName == ModalRoute.of(context)?.settings.name);
+
     return showNavigationDrawer
         ? buildStandardDrawerScaffold(context)
         : buildSideNavigationDrawer(context);

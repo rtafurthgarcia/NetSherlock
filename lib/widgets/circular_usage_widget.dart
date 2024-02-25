@@ -31,7 +31,7 @@ class CircularUsageWidget extends StatelessWidget {
       width: 150,
       selectedStepSize: 15,
       roundedCap: (_, __) => true,
-      selectedColor: Colors.greenAccent,
+      selectedColor: Theme.of(context).colorScheme.primary,
       unselectedColor: Colors.grey[200],
       child: Center(
         child: Padding(

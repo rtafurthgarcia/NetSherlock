@@ -10,32 +10,37 @@ class ShodanTrigger {
   ShodanTrigger(String name, bool triggered): _name = name, _triggered = triggered;
 }
 
-class ShodanAlert {
-  late String _id;
-  late String _name;
-  late DateTime _created;
-  late DateTime? _expiration;
+class ShodanAsset {
+  String _id;
+  String _name;
+  DateTime _created;
+  DateTime? _expiration;
+  List<String> _ips;
 
   String get id => _id;
   String get name => _name;
   DateTime get created => _created;
   DateTime? get expiration => _expiration;
+  List<String> get ips => _ips;
 
-  ShodanAlert(
+  ShodanAsset(
     {required String id,
     required String name,
     required DateTime created,
-    DateTime? expiration
+    required DateTime? expiration,
+    required List<String> ips
     }): _id = id,
         _name = name,
         _created = created,
-        _expiration = expiration;
+        _expiration = expiration,
+        _ips = ips;
 
-  factory ShodanAlert.fromJson(Map<String, dynamic> json) {
-    return ShodanAlert(
+  factory ShodanAsset.fromJson(Map<String, dynamic> json) {
+    return ShodanAsset(
       id: json['id'], 
       name: json['name'], 
       created: DateTime.parse(json['created']), 
-      expiration: json['expires'] > 0 ? DateTime.parse(json['expiration']) : null);
+      expiration: json['expires'] > 0 ? DateTime.parse(json['expiration']) : null,
+      ips: List<String>.from(json['filters']['ip'] as List));
   }
 }

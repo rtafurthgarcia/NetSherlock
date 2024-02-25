@@ -23,7 +23,8 @@ dependencies:
   qr_mobile_vision: ^4.1.4
   skeletonizer: ^1.0.1
   badges: ^2.0.3
-  intl:  
+  intl:
+  sentry_flutter: ^7.16.1  
 
 dev_dependencies:
   flutter_test:

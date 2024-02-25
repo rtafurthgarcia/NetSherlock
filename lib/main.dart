@@ -5,6 +5,8 @@ import 'package:netsherlock/helpers.dart';
 import 'package:netsherlock/pages/account_page.dart';
 import 'package:netsherlock/pages/asset_creation_page.dart';
 import 'package:netsherlock/pages/assets_page.dart';
+import 'package:netsherlock/pages/dns_page.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:window_manager/window_manager.dart';
 
 Future<void> main() async {
@@ -28,7 +30,13 @@ Future<void> main() async {
     });
   }
 
-  runApp(const MainApp());
+   await SentryFlutter.init(
+    (options) {
+      options.dsn = 'https://d622f7a687d0b8bb0555204c9dc158b8@o4506809592512512.ingest.sentry.io/4506809593757696';
+      options.tracesSampleRate = 1.0;
+    },
+    appRunner: () => runApp(MainApp()),
+  );
 }
 
 class MainApp extends StatelessWidget {
@@ -47,6 +55,7 @@ class MainApp extends StatelessWidget {
         "/account": (context) => const AccountPage(),
         "/assets": (context) => const AssetsPage(),
         "/assets/new": (context) => const AssetCreationPage(),
+        "/lookup": (context) => const DNSPage()
       },
     );
   }

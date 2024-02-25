@@ -17,7 +17,7 @@ List<DrawerDestination> destinations = <DrawerDestination>[
   /*DrawerDestination(label: 'Account', icon: const Icon(Icons.account_circle_outlined), selectedIcon: const Icon(Icons.account_circle), routeName: "/account", isHidden: true),*/
   DrawerDestination(label: 'Assets', icon: const Icon(Icons.api_outlined), selectedIcon: const Icon(Icons.api), routeName: "/assets"),
   DrawerDestination(label: 'Scans', icon: const Icon(Icons.domain_verification_outlined), selectedIcon: const Icon(Icons.domain_verification), routeName: "/scans"),
-  DrawerDestination(label: 'DNS', icon: const Icon(Icons.dns_outlined), selectedIcon: const Icon(Icons.dns), routeName: "/dns"),
+  DrawerDestination(label: 'DNS', icon: const Icon(Icons.dns_outlined), selectedIcon: const Icon(Icons.dns), routeName: "/lookup"),
 ];
 
 class AppNavigationDrawer extends StatefulWidget {

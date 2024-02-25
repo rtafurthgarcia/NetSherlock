@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:netsherlock/models/new_shodan_asset_model.dart';
 import 'package:netsherlock/models/shodan_account_model.dart';
 import 'package:netsherlock/models/shodan_asset_model.dart';
+import 'package:netsherlock/models/shodan_dns_entry.dart';
 
 import 'package:netsherlock/shared.dart';
 import 'dart:async';
@@ -59,5 +60,17 @@ class ShodanAPIProvider {
     if (response.statusCode != 200) {
       throw const HttpException("Could not delete our asset");
     } 
+  }
+
+  static Future<ShodanDNSLookupResult> lookupDomain(String domain) async {
+    final response = await http.get(
+      Uri.parse("${Shared.API_URI}/dns/domain/$domain?key=${Shared.apiKey}"),
+    );
+    if (response.statusCode != 200) {
+      throw const HttpException("Could not lookup the domain");
+    } else {
+      final responseJson = jsonDecode(response.body);
+      return ShodanDNSLookupResult.fromJson(responseJson);
+    }
   }
 }

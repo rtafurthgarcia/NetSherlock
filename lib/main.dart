@@ -3,6 +3,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:netsherlock/color_schemes.g.dart';
 import 'package:netsherlock/helpers.dart';
 import 'package:netsherlock/pages/account_page.dart';
+import 'package:netsherlock/pages/asset_creation_page.dart';
 import 'package:netsherlock/pages/assets_page.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -44,7 +45,8 @@ class MainApp extends StatelessWidget {
       initialRoute: "/account",
       routes: {
         "/account": (context) => const AccountPage(),
-        "/alerts": (context) => const AlertsPage()
+        "/assets": (context) => const AssetsPage(),
+        "/assets/new": (context) => const AssetCreationPage(),
       },
     );
   }

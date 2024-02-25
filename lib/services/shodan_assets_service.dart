@@ -1,34 +1,62 @@
 import 'package:flutter/widgets.dart';
+import 'package:netsherlock/models/new_shodan_asset_model.dart';
 import 'package:netsherlock/providers/shodan_api_provider.dart';
 import 'package:netsherlock/shared.dart';
 import 'package:netsherlock/models/shodan_asset_model.dart';
+import 'package:qr_mobile_vision/qr_camera.dart';
 
-class ShodanAlertsService extends ChangeNotifier {
-  ShodanServiceState _state = ShodanServiceState.loading;
+class ShodanAssetsService extends ChangeNotifier {
+  ShodanState _state = ShodanState.loading;
   dynamic _error;
 
-  List<ShodanAsset>? alerts;
+  List<ShodanAsset> assets = [];
 
-  ShodanServiceState get state => _state;
+  ShodanState get state => _state;
   dynamic get error => _error;
 
-  ShodanAlertsService() { 
-    loadAlerts();
+  ShodanAssetsService() { 
+    loadAssets();
   }
 
-  void loadAlerts() async {
+  void loadAssets() async {
+    _state = ShodanState.loading;
+    notifyListeners();
+
     if (Shared.apiKey.isEmpty) {
-      _state = ShodanServiceState.unauthenticated;
+      _state = ShodanState.unauthenticated;
       notifyListeners();
       return;
     }
 
-     try {
-      alerts = await ShodanAPIProvider.fetchMonitoredAssets();
+    try {
+      assets = await ShodanAPIProvider.fetchMonitoredAssets();
 
-      _state = ShodanServiceState.ok;
+      _state = ShodanState.ok;
     } catch (exception) {
-      _state = ShodanServiceState.error;
+      _state = ShodanState.error;
+      _error = exception;
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> createAsset(NewShodanAsset asset) async {
+    _state = ShodanState.loading;
+    notifyListeners();
+
+     if (Shared.apiKey.isEmpty) {
+      _state = ShodanState.unauthenticated;
+      notifyListeners();
+      return;
+    }
+
+    try {
+      final newAsset = await ShodanAPIProvider.postAsset(asset);
+      assets.add(newAsset);
+
+      _state = ShodanState.ok;
+    } catch (exception) {
+      _state = ShodanState.error;
       _error = exception;
     }
 

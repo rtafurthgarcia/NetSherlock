@@ -23,7 +23,7 @@ dependencies:
   qr_mobile_vision: ^4.1.4
   skeletonizer: ^1.0.1
   badges: ^2.0.3
-  intl: 
+  intl:  
 
 dev_dependencies:
   flutter_test:

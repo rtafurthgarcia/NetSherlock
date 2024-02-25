@@ -45,7 +45,7 @@ class _AccountPageState extends State<AccountPage> {
                 child: Consumer<ShodanAccountService>(
                     builder: (context, shodanAccountService, child) {
                   if (shodanAccountService.state ==
-                      ShodanServiceState.loading) {
+                      ShodanState.loading) {
                     return const Center(
                         child: CircularProgressIndicator.adaptive());
                   } else {
@@ -69,7 +69,7 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   buildHeader(context, ShodanAccountService shodanAccountService) {
-    if (shodanAccountService.state == ShodanServiceState.initial) {
+    if (shodanAccountService.state == ShodanState.initial) {
       return const Column(
         children: [
           Text(
@@ -148,7 +148,7 @@ class _AccountPageState extends State<AccountPage> {
         Builder(
           builder: (context) {
             if (shodanAccountService.state ==
-                ShodanServiceState.authenticated) {
+                ShodanState.authenticated) {
               return const SizedBox.shrink(); // so that nothing appears
             } else {
               _apiKeyController.text = Shared.apiKey;
@@ -203,7 +203,7 @@ class _AccountPageState extends State<AccountPage> {
         const SizedBox(height: 10),
         Builder(builder: (context) {
           dynamic callBack;
-          if (shodanAccountService.state == ShodanServiceState.authenticated) {
+          if (shodanAccountService.state == ShodanState.authenticated) {
             callBack = shodanAccountService.clearDetails;
           } else if (shodanAccountService.error == null) {
             callBack = shodanAccountService.load;
@@ -214,7 +214,7 @@ class _AccountPageState extends State<AccountPage> {
             style: FilledButton.styleFrom(
                 textStyle: const TextStyle(fontSize: 20)),
             child: Text(
-                shodanAccountService.state == ShodanServiceState.authenticated
+                shodanAccountService.state == ShodanState.authenticated
                     ? "Log-out"
                     : "Log-in"),
           );
@@ -225,7 +225,7 @@ class _AccountPageState extends State<AccountPage> {
 
   buildSignup(context, ShodanAccountService shodanAccountService) {
     return Builder(builder: (context) {
-      if (shodanAccountService.state == ShodanServiceState.authenticated) {
+      if (shodanAccountService.state == ShodanState.authenticated) {
         return const SizedBox.shrink();
       } else {
         return Column(

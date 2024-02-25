@@ -32,9 +32,14 @@ class ShodanAlertWidget extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(alert.name, style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    fontWeight: FontWeight.w800
-                ),),
+                Row(
+                  children: [
+                    Text(alert.name, style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        fontWeight: FontWeight.w800
+                    ),),
+                    
+                  ],
+                ),
                 const SizedBox(height: 4,),
                 Text(DateFormat.yMd('de').format(alert.created), style: Theme.of(context).textTheme.bodyMedium,),
                 Wrap(

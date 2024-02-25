@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:netsherlock/models/new_shodan_asset_model.dart';
 import 'package:netsherlock/models/shodan_account_model.dart';
 import 'package:netsherlock/models/shodan_asset_model.dart';
 
@@ -32,5 +35,20 @@ class ShodanAPIProvider {
     List<ShodanAsset> shodanAlerts = List<ShodanAsset>.from(responseJson.map((model)=> ShodanAsset.fromJson(model)));
 
     return shodanAlerts;
+  }
+
+  static Future<ShodanAsset> postAsset(NewShodanAsset asset) async {
+    final body = asset.toJsonString();
+
+    final response = await http.post(
+      Uri.parse("${Shared.API_URI}/shodan/alert?key=${Shared.apiKey}"),
+      body: body
+    );
+    if (response.statusCode != 200) {
+      throw const HttpException("Could not create our new asset");
+    } else {
+      final responseJson = jsonDecode(response.body);
+      return ShodanAsset.fromJson(responseJson);
+    }
   }
 }

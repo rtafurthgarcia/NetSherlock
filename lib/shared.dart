@@ -1,5 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-enum ShodanServiceState { initial, loading, unauthenticated, authenticated, error, ok }
+enum ShodanState { initial, loading, unauthenticated, authenticated, error, ok }
 
 class Shared {
   static const String API_URI = "https://api.shodan.io";

@@ -4,11 +4,11 @@ import 'package:netsherlock/providers/shodan_api_provider.dart';
 import 'package:netsherlock/shared.dart';
 
 class ShodanAccountService extends ChangeNotifier {
-  ShodanServiceState _state = ShodanServiceState.initial;
+  ShodanState _state = ShodanState.initial;
   dynamic _error;
   ShodanAccount? shodanAccount;
 
-  ShodanServiceState get state => _state;
+  ShodanState get state => _state;
   dynamic get error => _error;
 
   void setApiKey(String newApiKey) async {
@@ -22,10 +22,10 @@ class ShodanAccountService extends ChangeNotifier {
     
     final validationMessage = validateApiKey(Shared.apiKey);
     if (validationMessage == null) {
-      _state = ShodanServiceState.initial;
+      _state = ShodanState.initial;
       _error = null;
     } else {
-      _state = ShodanServiceState.error;
+      _state = ShodanState.error;
       _error = validationMessage;
     }
 
@@ -48,10 +48,10 @@ class ShodanAccountService extends ChangeNotifier {
   }
 
   void clearDetails() async {
-    _state = ShodanServiceState.loading;
+    _state = ShodanState.loading;
     notifyListeners();
 
-    _state = ShodanServiceState.initial;
+    _state = ShodanState.initial;
     _error = null;
     Shared.apiKey = "";
     await Shared.storage.write(key: Shared.API_KEY_SETTINGS, value: "");
@@ -60,13 +60,13 @@ class ShodanAccountService extends ChangeNotifier {
   }
 
   void load() async {
-    _state = ShodanServiceState.loading;
+    _state = ShodanState.loading;
     notifyListeners();
 
     Shared.apiKey = await Shared.storage.read(key: Shared.API_KEY_SETTINGS) ?? "";
 
     if (Shared.apiKey.isEmpty) {
-      _state = ShodanServiceState.initial;
+      _state = ShodanState.initial;
       notifyListeners();
       return;
     }
@@ -74,7 +74,7 @@ class ShodanAccountService extends ChangeNotifier {
     final validationMessage = validateApiKey(Shared.apiKey);
     if (validationMessage != null) {
       _error = validationMessage;
-      _state = ShodanServiceState.error;
+      _state = ShodanState.error;
       notifyListeners();
       return;
     }
@@ -83,9 +83,9 @@ class ShodanAccountService extends ChangeNotifier {
       shodanAccount =
           await ShodanAPIProvider.fetchAccountDetails(apiKey: Shared.apiKey);
 
-      _state = ShodanServiceState.authenticated;
+      _state = ShodanState.authenticated;
     } catch (exception) {
-      _state = ShodanServiceState.error;
+      _state = ShodanState.error;
       _error = exception;
     }
 

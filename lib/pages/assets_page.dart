@@ -3,49 +3,58 @@ import 'package:netsherlock/models/shodan_asset_model.dart';
 import 'package:netsherlock/services/shodan_account_service.dart';
 import 'package:netsherlock/services/shodan_assets_service.dart';
 import 'package:netsherlock/shared.dart';
+import 'package:netsherlock/pages/asset_creation_page.dart';
 import 'package:netsherlock/widgets/custom_error_widget.dart';
 import 'package:netsherlock/widgets/navigationdrawer_widget.dart';
 import 'package:netsherlock/widgets/shodan_asset_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class AlertsPage extends StatefulWidget {
-  const AlertsPage({super.key});
+class AssetsPage extends StatefulWidget {
+  const AssetsPage({super.key});
 
   @override
-  State<AlertsPage> createState() => _AlertsPageState();
+  State<AssetsPage> createState() => _AssetsPageState();
 }
 
-class _AlertsPageState extends State<AlertsPage> {
+class _AssetsPageState extends State<AssetsPage> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<ShodanAccountService>(create: (_) => ShodanAccountService()),
-        ChangeNotifierProvider<ShodanAlertsService>(create: (_) => ShodanAlertsService()),
+        ChangeNotifierProvider<ShodanAssetsService>(create: (_) => ShodanAssetsService()),
       ],
       child: Scaffold(
-          appBar: AppBar(title: const Text ("NetSherlock")),
-          drawer: AppNavigationDrawer(),
-          body: Consumer<ShodanAlertsService>(
-            builder: (context, shodanAlertsService, child) {
-              if (shodanAlertsService.state == ShodanServiceState.error) {
-                return CustomErrorWidget(errorMessage: shodanAlertsService.error.toString());
-              }
+        appBar: AppBar(title: const Text ("NetSherlock")),
+        drawer: AppNavigationDrawer(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context).pushNamed("/assets/new");
+          },
+          child: const Icon(Icons.add),
+        ),
+        body: Consumer<ShodanAssetsService>(
+          builder: (context, shodanAlertsService, child) {
+            if (shodanAlertsService.state == ShodanState.error) {
+              return CustomErrorWidget(errorMessage: shodanAlertsService.error.toString());
+            }
 
-              final alerts = shodanAlertsService.state == ShodanServiceState.loading ? 
-                List.generate(
-                  5, (index) => ShodanAsset(
-                    id: "FAKEFAKEFAKEFAKE",
-                    name: "New service",
-                    created: DateTime.now(),
-                    expiration: DateTime.now().add(const Duration(days: 30)), 
-                    ips: List<String>.from({"127.0.0.1", "127.0.0.2"})
-                  )
-              ) : shodanAlertsService.alerts;
+            final alerts = shodanAlertsService.state == ShodanState.loading ? 
+              List.generate(
+                5, (index) => ShodanAsset(
+                  id: "FAKEFAKEFAKEFAKE",
+                  name: "New service",
+                  created: DateTime.now(),
+                  expiration: DateTime.now().add(const Duration(days: 30)), 
+                  ips: List<String>.from({"127.0.0.1", "127.0.0.2"})
+                )
+            ) : shodanAlertsService.assets;
 
-              return Skeletonizer(
-                enabled: shodanAlertsService.state == ShodanServiceState.loading,
+            return Skeletonizer(
+              enabled: shodanAlertsService.state == ShodanState.loading,
+              child: RefreshIndicator(
+                onRefresh: () => _pullRefresh(shodanAlertsService),
                 child: ListView.builder(
                   padding: const EdgeInsets.all(24),
                   itemCount: alerts!.length,
@@ -53,10 +62,15 @@ class _AlertsPageState extends State<AlertsPage> {
                     return ShodanAlertWidget(alert: alerts[index]);
                   }
                 ),
-              );
-            }
-          ),
-        )
+              ),
+            );
+          }
+        ),
+      )
     );
+  }
+
+  Future<void> _pullRefresh(ShodanAssetsService shodanAssetsService) async {
+    shodanAssetsService.loadAssets();
   }
 }
